@@ -3,11 +3,14 @@
 
 #include <gmp.h>
 
+void fp_params_init();
+void fp_params_free();
+
 /* Arithmetic operations in the base field F_p. */
-void fp_add(mpz_t x, const mpz_t y, const mpz_t z, const mpz_t p);
-void fp_sub(mpz_t x, const mpz_t y, const mpz_t z, const mpz_t p);
-void fp_mul(mpz_t x, const mpz_t y, const mpz_t z, const mpz_t p);
-void fp_inv(mpz_t x, const mpz_t y, const mpz_t p);
+void fp_add(mpz_t x, const mpz_t y, const mpz_t z);
+void fp_sub(mpz_t x, const mpz_t y, const mpz_t z);
+void fp_mul(mpz_t x, const mpz_t y, const mpz_t z);
+void fp_inv(mpz_t x, const mpz_t y);
 
 /* An element of the field F_p^2, a + bu, where a,b belong to F_p. */
 typedef struct fp2_elem {
@@ -23,11 +26,11 @@ void fp2_elem_clear(fp2_elem *e);
 char *fp2_elem_get_str(const fp2_elem *e);
 
 /* Arithmetic operations in the field extension F_p^2. */
-void fp2_add(fp2_elem *x, const fp2_elem *y, const fp2_elem *z, const mpz_t p);
-void fp2_sub(fp2_elem *x, const fp2_elem *y, const fp2_elem *z, const mpz_t p);
-void fp2_mul(fp2_elem *x, const fp2_elem *y, const fp2_elem *z, const mpz_t p);
-void fp2_square(fp2_elem *x, const fp2_elem *y, const mpz_t p);
-void fp2_inv(fp2_elem *x, const fp2_elem *y, const mpz_t p);
+void fp2_add(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
+void fp2_sub(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
+void fp2_mul(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
+void fp2_square(fp2_elem *x, const fp2_elem *y);
+void fp2_inv(fp2_elem *x, const fp2_elem *y);
 
 int fp2_equal(const fp2_elem *e1, const fp2_elem *e2);
 
@@ -52,11 +55,11 @@ char *fp6_elem_get_str(const fp6_elem *e);
  * Arithmetic operations in the field extension F_p^6. This field is implemented
  * as a cubic extension of F_p^2.
  */
-void fp6_add(fp6_elem *x, const fp6_elem *y, const fp6_elem *z, const mpz_t p);
-void fp6_sub(fp6_elem *x, const fp6_elem *y, const fp6_elem *z, const mpz_t p);
-void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z, const mpz_t p);
-void fp6_square(fp6_elem *x, const fp6_elem *y, const mpz_t p);
-void fp6_inv(fp6_elem *x, const fp6_elem *y, const mpz_t p);
+void fp6_add(fp6_elem *x, const fp6_elem *y, const fp6_elem *z);
+void fp6_sub(fp6_elem *x, const fp6_elem *y, const fp6_elem *z);
+void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z);
+void fp6_square(fp6_elem *x, const fp6_elem *y);
+void fp6_inv(fp6_elem *x, const fp6_elem *y);
 
 int fp6_equal(const fp6_elem *e1, const fp6_elem *e2);
 
@@ -75,11 +78,11 @@ void fp12_elem_clear(fp12_elem *e);
  * Arithmetic operations in the field extension F_p^12. This field is implemented
  * as a quadratic extension of F_p^6.
  */
-void fp12_add(fp12_elem *x, const fp12_elem *y, const fp12_elem *z, const mpz_t p);
-void fp12_sub(fp12_elem *x, const fp12_elem *y, const fp12_elem *z, const mpz_t p);
-void fp12_mul(fp12_elem *x, const fp12_elem *y, const fp12_elem *z, const mpz_t p);
-void fp12_square(fp12_elem *x, const fp12_elem *y, const mpz_t p);
-void fp12_inv(fp12_elem *x, const fp12_elem *y, const mpz_t p);
+void fp12_add(fp12_elem *x, const fp12_elem *y, const fp12_elem *z);
+void fp12_sub(fp12_elem *x, const fp12_elem *y, const fp12_elem *z);
+void fp12_mul(fp12_elem *x, const fp12_elem *y, const fp12_elem *z);
+void fp12_square(fp12_elem *x, const fp12_elem *y);
+void fp12_inv(fp12_elem *x, const fp12_elem *y);
 
 int fp12_equal(const fp12_elem *e1, const fp12_elem *e2);
 

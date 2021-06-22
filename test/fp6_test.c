@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "params.h"
 #include "finite_field.h"
 
 #define FP6_DEFINE_TEST(op,                                   \
@@ -65,10 +64,10 @@ void test_elems_init(fp6_elem *e1, fp6_elem *e2)
     );
 }
 
-int test_fp6_add(const fp6_elem *e1, const fp6_elem *e2, const mpz_t p)
+int test_fp6_add(const fp6_elem *e1, const fp6_elem *e2)
 {
     FP6_DEFINE_TEST(
-        fp6_add(&actual, e1, e2, p),
+        fp6_add(&actual, e1, e2),
         "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000001181daae2",
         "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000001181daac8",
         "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000001181daac6",
@@ -78,10 +77,10 @@ int test_fp6_add(const fp6_elem *e1, const fp6_elem *e2, const mpz_t p)
     );
 }
 
-int test_fp6_mul(const fp6_elem *e1, const fp6_elem *e2, const mpz_t p)
+int test_fp6_mul(const fp6_elem *e1, const fp6_elem *e2)
 {
     FP6_DEFINE_TEST(
-        fp6_mul(&actual, e1, e2, p),
+        fp6_mul(&actual, e1, e2),
         "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153fffe877e16fb74df198a",
         "0x00000000000000000000000000000000000000000000000000000000000000000000000000000001cbc15d96ae5f0654",
         "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffff20be8b7f5e9be1fc",
@@ -91,10 +90,10 @@ int test_fp6_mul(const fp6_elem *e1, const fp6_elem *e2, const mpz_t p)
     );
 }
 
-int test_fp6_square(const fp6_elem *e1,  const mpz_t p)
+int test_fp6_square(const fp6_elem *e1)
 {
     FP6_DEFINE_TEST(
-        fp6_square(&actual, e1, p),
+        fp6_square(&actual, e1),
         "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153fffe877e1715b7a71e48",
         "0x00000000000000000000000000000000000000000000000000000000000000000000000000000001cbc15d947e23b0f6",
         "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffff20be8b9310b1e3e4",
@@ -104,10 +103,10 @@ int test_fp6_square(const fp6_elem *e1,  const mpz_t p)
     );
 }
 
-int test_fp6_inv(const fp6_elem *e1,  const mpz_t p)
+int test_fp6_inv(const fp6_elem *e1)
 {
     FP6_DEFINE_TEST(
-        fp6_inv(&actual, e1, p),
+        fp6_inv(&actual, e1),
         "0x0f5d3888ce8fb7e81051c8ab459ec57c5cac1cc5bad8d497f5d941f454303adb51e1f13856f01eb3b6e96a349bfd506c",
         "0x00b5066943316367b6f802b3e2feb164112cf652c56a8fe4395f22843335c3f6db7d125937cfa97b25f59ab0a0ccae5d",
         "0x1308087806edee690d656f71d22ae367dfc4963d04e46a2853d2e3d80c1b7494544e1cba6032f0db129086d6da4a1d61",
@@ -123,14 +122,13 @@ int main()
 
     pass_count = fail_count = 0;
 
-    mpz_t p;
-    mpz_init_set_str(p, BLS12_381_MODULUS, 0);
+    fp_params_init();
 
     fp6_elem e1, e2;
     test_elems_init(&e1, &e2);
 
     printf("Running test_fp6_add...\n");
-    result = test_fp6_add(&e1, &e2, p);
+    result = test_fp6_add(&e1, &e2);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -140,7 +138,7 @@ int main()
     }
 
     printf("Running test_fp6_mul...\n");
-    result = test_fp6_mul(&e1, &e2, p);
+    result = test_fp6_mul(&e1, &e2);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -150,7 +148,7 @@ int main()
     }
 
     printf("Running test_fp6_square...\n");
-    result = test_fp6_square(&e1, p);
+    result = test_fp6_square(&e1);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -160,7 +158,7 @@ int main()
     }
 
     printf("Running test_fp6_inv...\n");
-    result = test_fp6_inv(&e1, p);
+    result = test_fp6_inv(&e1);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -171,7 +169,8 @@ int main()
 
     fp6_elem_clear(&e1);
     fp6_elem_clear(&e2);
-    mpz_clear(p);
+
+    fp_params_free();
 
     printf("FP6 test results: %d passed, %d failed\n", pass_count, fail_count);
 

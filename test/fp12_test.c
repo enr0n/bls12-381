@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "params.h"
 #include "finite_field.h"
 
 #define FP12_DEFINE_TEST(op,                                     \
@@ -105,10 +104,10 @@ void test_elems_init(fp12_elem *e1, fp12_elem *e2)
     fp12_elem_from_str(e2, e2a, e2b);
 }
 
-int test_fp12_add(const fp12_elem *e1, const fp12_elem *e2, const mpz_t p)
+int test_fp12_add(const fp12_elem *e1, const fp12_elem *e2)
 {
     FP12_DEFINE_TEST(
-        fp12_add(&actual, e1, e2, p),
+        fp12_add(&actual, e1, e2),
         "0x04dd5087b69e3cfd4ef40d43d81cb2ded547fbfde87e659173022f45512f9f9a0858eea48fb4e507d197278584c7964f",
         "0x18f2a164f4f99c4341a9ddccad2530628dcbee753f5674fc1b6285b5a3a0cd257c4637c8ae2f881460e849b371da7b03",
         "0x108a7943abc0303aeaeda70db55334792989cbf26a0dc64f3cf521be6fd85f70dea040d57b80d17815b53034d9532f16",
@@ -124,10 +123,10 @@ int test_fp12_add(const fp12_elem *e1, const fp12_elem *e2, const mpz_t p)
     );
 }
 
-int test_fp12_mul(const fp12_elem *e1, const fp12_elem *e2, const mpz_t p)
+int test_fp12_mul(const fp12_elem *e1, const fp12_elem *e2)
 {
     FP12_DEFINE_TEST(
-        fp12_mul(&actual, e1, e2, p),
+        fp12_mul(&actual, e1, e2),
         "0x0129afc7c1ca7d1f962c83320b1f917416f67d39c5555d6d0fe36fee9ed7268b644b855036b05d016ef6d3a246026046",
         "0x0d6e3fba17f36cfe1f88ee187892b650827fb693538213ed785551294534f7771d7438b13a289031ea7b2f75b64c2a27",
         "0x006364f3ed0b46136ff623364595b668196a032814bf422cc3ebec42d8ed984ca1a9a1a0ad14a537241d0dfcb0c1dd95",
@@ -143,10 +142,10 @@ int test_fp12_mul(const fp12_elem *e1, const fp12_elem *e2, const mpz_t p)
     );
 }
 
-int test_fp12_square(const fp12_elem *e1,  const mpz_t p)
+int test_fp12_square(const fp12_elem *e1)
 {
     FP12_DEFINE_TEST(
-        fp12_square(&actual, e1, p),
+        fp12_square(&actual, e1),
         "0x190868e8fac47fda5c2a8131bffeac4a1762f21089ce303f0f48601472c36dcab0484a3ba2c744321f95cb9f6a233e0b",
         "0x17654a404c677dea53ed0be5ff5bbdd785d950de47759c532b00951eccdc0e59fff2114e85a3ffbb8bc6c7a4b08efd1b",
         "0x03e0993de3f59a473df3ffbcf296799bb6432f7f07b54857deb383b8214710c8f22c05a503079318004c74d9e44cdcc6",
@@ -162,10 +161,10 @@ int test_fp12_square(const fp12_elem *e1,  const mpz_t p)
     );
 }
 
-int test_fp12_inv(const fp12_elem *e1,  const mpz_t p)
+int test_fp12_inv(const fp12_elem *e1)
 {
     FP12_DEFINE_TEST(
-        fp12_inv(&actual, e1, p),
+        fp12_inv(&actual, e1),
         "0x0cede514d1f8a3751e7ce444093ffa1d35dd2e30310806b407ba1948247ab9e52cfaf49915575d1e75e944a00c0ca2bd",
         "0x0efa0737debdcad772f304546151a73e923c2613be65112290d6fef6af7089b4dc2073224faac826eebc9384ef55abe8",
         "0x0931f46c846f1599e1f77e11d4af739c96ad5d57b0a276071dc2e998a7bae3413cb7dbc67c25e9152f095786a857e8c6",
@@ -187,14 +186,13 @@ int main()
 
     pass_count = fail_count = 0;
 
-    mpz_t p;
-    mpz_init_set_str(p, BLS12_381_MODULUS, 0);
+    fp_params_init();
 
     fp12_elem e1, e2;
     test_elems_init(&e1, &e2);
 
     printf("Running test_fp12_add...\n");
-    result = test_fp12_add(&e1, &e2, p);
+    result = test_fp12_add(&e1, &e2);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -204,7 +202,7 @@ int main()
     }
 
     printf("Running test_fp12_mul...\n");
-    result = test_fp12_mul(&e1, &e2, p);
+    result = test_fp12_mul(&e1, &e2);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -214,7 +212,7 @@ int main()
     }
 
     printf("Running test_fp12_square...\n");
-    result = test_fp12_square(&e1, p);
+    result = test_fp12_square(&e1);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -224,7 +222,7 @@ int main()
     }
 
     printf("Running test_fp12_inv...\n");
-    result = test_fp12_inv(&e1, p);
+    result = test_fp12_inv(&e1);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;
@@ -235,7 +233,8 @@ int main()
 
     fp12_elem_clear(&e1);
     fp12_elem_clear(&e2);
-    mpz_clear(p);
+
+    fp_params_free();
 
     printf("FP12 test results: %d passed, %d failed\n", pass_count, fail_count);
 

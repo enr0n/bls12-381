@@ -13,6 +13,7 @@
  * as defined in "Guide to Pairing-based Cryptography."
  */
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -41,6 +42,11 @@ void fp_params_init()
 void fp_params_free()
 {
     mpz_clear(g_BLS12_381_P);
+}
+
+bool fp_equiv(const mpz_t x, const mpz_t y)
+{
+    return mpz_congruent_p(x, y, g_BLS12_381_P);
 }
 
 void fp_add(mpz_t x, const mpz_t y, const mpz_t z)

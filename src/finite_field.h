@@ -1,12 +1,14 @@
 #ifndef _FINITE_FIELD_H_
 #define _FINITE_FIELD_H_
 
+#include <stdbool.h>
 #include <gmp.h>
 
 void fp_params_init();
 void fp_params_free();
 
 /* Arithmetic operations in the base field F_p. */
+bool fp_equiv(const mpz_t x, const mpz_t y);
 void fp_add(mpz_t x, const mpz_t y, const mpz_t z);
 void fp_sub(mpz_t x, const mpz_t y, const mpz_t z);
 void fp_mul(mpz_t x, const mpz_t y, const mpz_t z);

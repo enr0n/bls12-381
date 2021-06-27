@@ -22,6 +22,7 @@ typedef struct fp2_elem {
 
 void fp2_elem_init(fp2_elem *e);
 void fp2_elem_set(fp2_elem *e1, const fp2_elem *e2);
+void fp2_elem_set_si(fp2_elem *e, signed long int a, signed long int b);
 void fp2_elem_from_str(fp2_elem *e, const char *a, const char *b);
 void fp2_elem_clear(fp2_elem *e);
 

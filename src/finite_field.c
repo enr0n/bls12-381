@@ -84,6 +84,12 @@ void fp2_elem_set(fp2_elem *e1, const fp2_elem *e2)
     mpz_set(e1->b, e2->b);
 }
 
+void fp2_elem_set_si(fp2_elem *e, signed long int a, signed long int b)
+{
+    mpz_set_si(e->a, a);
+    mpz_set_si(e->b, b);
+}
+
 void fp2_elem_from_str(fp2_elem *e, const char *a, const char *b)
 {
     mpz_init_set_str(e->a, a, 0);
@@ -274,7 +280,7 @@ static inline void fp2_mul_by_fp6_alpha(fp2_elem *x, const fp2_elem *y)
      *
      * This amounts to (a + bu)(u + 1) = au + a + bu^2 + bu
      *                                 = au + a - b + bu      // since u^2 = beta = -1
-     *                                 = (a - b) + (a + bu)
+     *                                 = (a - b) + (a + b)u
      */
     assert(x != y);
     fp_sub(x->a, y->a, y->b);

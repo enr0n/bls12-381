@@ -86,6 +86,12 @@ bool G1_equiv_affine(const G1_elem_affine *P, const G1_elem_affine *Q);
 bool G1_equiv_proj(const G1_elem_proj *P, const G1_elem_proj *Q);
 
 /**
+ * Negate an element in G_1.
+ */
+void G1_negate_affine(G1_elem_affine *r, const G1_elem_affine *P);
+void G1_negate_proj(G1_elem_proj *r, const G1_elem_proj *P);
+
+/**
  * Group operations.
  *
  * Each of these returns the result in projective coordinates.

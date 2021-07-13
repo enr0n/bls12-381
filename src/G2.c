@@ -284,6 +284,28 @@ bool G2_equiv_proj(const G2_elem_proj *P, const G2_elem_proj *Q)
     return ret;
 }
 
+void G2_negate_affine(G2_elem_affine *r, const G2_elem_affine *P)
+{
+    fp2_elem_set(r->x, P->x);
+
+    if (P->infinity) {
+        fp2_elem_set(r->y, P->y);
+        r->infinity = true;
+    } else {
+        mpz_neg(r->y->a, P->y->a);
+        mpz_neg(r->y->b, P->y->b);
+        r->infinity = false;
+    }
+}
+
+void G2_negate_proj(G2_elem_proj *r, const G2_elem_proj *P)
+{
+    fp2_elem_set(r->x, P->x);
+    mpz_neg(r->y->a, P->y->a);
+    mpz_neg(r->y->b, P->y->b);
+    fp2_elem_set(r->z, P->z);
+}
+
 void G2_add_proj(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_proj *Q)
 {
     /* Algorithm 7: https://eprint.iacr.org/2015/1060.pdf */

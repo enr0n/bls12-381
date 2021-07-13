@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -180,6 +181,186 @@ int test_fp12_inv(const fp12_elem *e1)
     );
 }
 
+int test_fp12_frobenius(const fp12_elem *e1)
+{
+    FP12_DEFINE_TEST(
+        fp12_frobenius(&actual, e1),
+        "0x15f30bb146420a3596196bc00af6c7091b1a912d3fe7024390015b157ce58b8cd3b853fc617f50270c4dafd0b8364404",
+        "0x04b293dc985b4c17b219d60a85a3e3b7cf3fbc2243a52069b98f93d2f65557041c88308c6f648ddb65eef81a1f901b55",
+        "0x02481c0453dde3b97f0da08d9b51b759443d35c9f851ba0c0a3790b5cb83cd9338da21ccad32815731e8bfcce5c67e93",
+        "0x09750a21a5bf579a8547a4962d93d17d5b4524a6875b7a0520d7075dd6e3351ecb10f65d1ab9769515a17ccaa80a2709",
+        "0x12be8c09e110109b513c0f93e6063cffc191bcb0f78cf5e7f935c49a8b64be6574ca83735303807f65a52e7b45d66c6e",
+        "0x10b50724c658a333c47eedfb0248c118da9a7b250c571972e92eee26a4828c20d3fe94f583d13bc3b3fb53a2e240f8e1",
+        "0x0d5e4cde27d75477c3c3b859eaf60bb2523808bf53ee4d149721aedd46e061d533856fdcdb8028ae3aae7fc1c148ec7d",
+        "0x0d4607d984afaebd55039de595953cc03eaf171f453dc04f54f134e849358c5e6f91970fe1ac1ffdefc32d06d92c89d6",
+        "0x1565f1dc8dcf6165429bf9f7267864fb4dd752d030f253c03404308d1112c5f3992d9fde39f7b7b25342694ae50388a8",
+        "0x160405304c584fdfa0963f6b74e102f3afc7a14889af7679dbac658fb8f6fb854076ba6ac787182ede7c55d20994fa80",
+        "0x0d3bd9e1ec2dc95390cc5a49fb7664c7c08ca96a34acf8cdb07c9bb0b1d5e375df619a5c1637ba70291a29a57f3dba60",
+        "0x1320fc638c14abd4f7256d8d690d3ce4e6bf14221e8719ff7c1dce5ae7f98d5671a69d7003ce6757ab6e7cdafa4ddd30"
+    );
+}
+
+int test_fp12_pow(const fp12_elem *e1)
+{
+    int res;
+    fp12_elem expect, actual;
+    mpz_t exp;
+
+    fp12_elem_init(&actual);
+    fp12_elem_init(&expect);
+    mpz_init(exp);
+
+    // expect = e1^6
+    fp12_square(&expect, e1);
+    fp12_mul(&expect, &expect, e1);
+    fp12_square(&expect, &expect);
+
+    mpz_set_ui(exp, 6);
+    fp12_pow(&actual, e1, exp);
+
+    printf("Actual:    \n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, actual.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, actual.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, actual.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, actual.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, actual.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, actual.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, actual.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, actual.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, actual.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, actual.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, actual.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, actual.b->c->b));
+    printf("Expected:\n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, expect.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, expect.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, expect.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, expect.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, expect.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, expect.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, expect.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, expect.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, expect.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, expect.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, expect.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, expect.b->c->b));
+
+    res = fp12_equal(&actual, &expect);
+
+    // expect = e1^-6
+    fp12_inv(&expect, &expect);
+
+    mpz_set_si(exp, -6);
+    fp12_pow(&actual, e1, exp);
+
+    printf("Actual:    \n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, actual.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, actual.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, actual.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, actual.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, actual.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, actual.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, actual.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, actual.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, actual.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, actual.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, actual.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, actual.b->c->b));
+    printf("Expected:\n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, expect.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, expect.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, expect.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, expect.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, expect.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, expect.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, expect.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, expect.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, expect.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, expect.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, expect.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, expect.b->c->b));
+
+    res = res && fp12_equal(&actual, &expect);
+
+    // expect = e1^5
+    fp12_square(&expect, e1);
+    fp12_square(&expect, &expect);
+    fp12_mul(&expect, &expect, e1);
+
+    mpz_set_ui(exp, 5);
+    fp12_pow(&actual, e1, exp);
+
+    printf("Actual:    \n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, actual.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, actual.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, actual.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, actual.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, actual.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, actual.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, actual.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, actual.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, actual.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, actual.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, actual.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, actual.b->c->b));
+    printf("Expected:\n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, expect.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, expect.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, expect.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, expect.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, expect.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, expect.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, expect.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, expect.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, expect.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, expect.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, expect.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, expect.b->c->b));
+
+    res = fp12_equal(&actual, &expect);
+
+    // expect = e1^-5
+    fp12_inv(&expect, &expect);
+
+    mpz_set_si(exp, -5);
+    fp12_pow(&actual, e1, exp);
+
+    printf("Actual:    \n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, actual.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, actual.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, actual.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, actual.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, actual.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, actual.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, actual.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, actual.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, actual.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, actual.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, actual.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, actual.b->c->b));
+    printf("Expected:\n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, expect.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, expect.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, expect.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, expect.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, expect.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, expect.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, expect.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, expect.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, expect.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, expect.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, expect.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, expect.b->c->b));
+
+    res = res && fp12_equal(&actual, &expect);
+
+    fp12_elem_clear(&actual);
+    fp12_elem_clear(&expect);
+    mpz_clear(exp);
+
+    return res;
+}
+
 int main()
 {
     int result, pass_count, fail_count;
@@ -223,6 +404,26 @@ int main()
 
     printf("Running test_fp12_inv...\n");
     result = test_fp12_inv(&e1);
+    if (!result) {
+        printf("FAIL\n\n");
+        fail_count++;
+    } else {
+        printf("PASS\n\n");
+        pass_count++;
+    }
+
+    printf("Running test_fp12_frobenius...\n");
+    result = test_fp12_frobenius(&e1);
+    if (!result) {
+        printf("FAIL\n\n");
+        fail_count++;
+    } else {
+        printf("PASS\n\n");
+        pass_count++;
+    }
+
+    printf("Running test_fp12_pow...\n");
+    result = test_fp12_pow(&e1);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;

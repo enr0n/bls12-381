@@ -34,6 +34,8 @@ void fp2_sub(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
 void fp2_mul(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
 void fp2_square(fp2_elem *x, const fp2_elem *y);
 void fp2_inv(fp2_elem *x, const fp2_elem *y);
+void fp2_negate(fp2_elem *x, const fp2_elem *y);
+void fp2_conjugate(fp2_elem *x, const fp2_elem *y);
 
 int fp2_equal(const fp2_elem *e1, const fp2_elem *e2);
 
@@ -63,6 +65,7 @@ void fp6_sub(fp6_elem *x, const fp6_elem *y, const fp6_elem *z);
 void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z);
 void fp6_square(fp6_elem *x, const fp6_elem *y);
 void fp6_inv(fp6_elem *x, const fp6_elem *y);
+void fp6_negate(fp6_elem *x, const fp6_elem *y);
 
 int fp6_equal(const fp6_elem *e1, const fp6_elem *e2);
 
@@ -85,7 +88,10 @@ void fp12_add(fp12_elem *x, const fp12_elem *y, const fp12_elem *z);
 void fp12_sub(fp12_elem *x, const fp12_elem *y, const fp12_elem *z);
 void fp12_mul(fp12_elem *x, const fp12_elem *y, const fp12_elem *z);
 void fp12_square(fp12_elem *x, const fp12_elem *y);
+void fp12_pow(fp12_elem *x, const fp12_elem *y, const mpz_t exp);
 void fp12_inv(fp12_elem *x, const fp12_elem *y);
+void fp12_conjugate(fp12_elem *x, const fp12_elem *y);
+void fp12_frobenius(fp12_elem *x, const fp12_elem *y);
 
 int fp12_equal(const fp12_elem *e1, const fp12_elem *e2);
 

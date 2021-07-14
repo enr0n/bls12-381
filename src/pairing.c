@@ -4,6 +4,8 @@
 
 #include "params.h"
 #include "finite_field.h"
+#include "G1.h"
+#include "G2.h"
 
 #include "pairing.h"
 
@@ -92,4 +94,58 @@ void final_exponentiation(fp12_elem *r, const fp12_elem *f)
     fp12_elem_clear(&t1);
     fp12_elem_clear(&t2);
     fp12_elem_clear(&t3);
+}
+
+/**
+ * During unit tests, we want to inspect the final value of T; the projective
+ * point accumalator. This should help failing tests distinguish beween line function
+ * errors, and miller loop errors.
+ */
+void miller_loop(fp12_elem *r, G2_elem_affine *R, const G1_elem_affine *P, const G2_elem_affine *Q)
+{
+    fp12_elem fr, l;
+    G2_elem_proj T, Q_proj;
+
+    mp_bitcnt_t c;
+
+    int sign;
+    mpz_t e;
+
+    fp12_elem_init(&fr);
+    fp12_elem_init(&l);
+
+    G2_identity_init_proj(&T);
+    G2_identity_init_proj(&Q_proj);
+
+    mpz_init_set(e, g_BLS12_381_t);
+
+    if ((sign = mpz_sgn(e)) < 0) {
+        mpz_neg(e, e);
+    }
+
+    G2_affine2proj(&T, Q);
+    G2_affine2proj(&Q_proj, Q);
+
+    mpz_set_si(fr.a->a->a, 1);
+
+    c = (mp_bitcnt_t)mpz_sizeinbase(e, 2) - 2;
+    for (;;) {
+        G2_double_proj(&T, &T);
+
+        if (mpz_tstbit(e, c)) {
+            G2_add_proj(&T, &T, &Q_proj);
+        }
+
+        if (!c) break;
+        c--;
+    }
+
+    fp12_elem_set(r, &fr);
+    G2_proj2affine(R, &T);
+
+    fp12_elem_clear(&fr);
+    fp12_elem_clear(&l);
+    G2_elem_free_proj(&T);
+    G2_elem_free_proj(&Q_proj);
+    mpz_clear(e);
 }

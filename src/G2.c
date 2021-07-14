@@ -33,6 +33,8 @@ void G2_proj2affine(G2_elem_affine *affn, const G2_elem_proj *proj)
         return;
     }
 
+    affn->infinity = false;
+
     fp2_elem zinv;
 
     fp2_elem_init(&zinv);

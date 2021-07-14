@@ -31,6 +31,8 @@ void G1_proj2affine(G1_elem_affine *affn, const G1_elem_proj *proj)
         return;
     }
 
+    affn->infinity = false;
+
     mpz_t zinv;
 
     mpz_init(zinv);

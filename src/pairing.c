@@ -149,3 +149,14 @@ void miller_loop(fp12_elem *r, G2_elem_affine *R, const G1_elem_affine *P, const
     G2_elem_free_proj(&Q_proj);
     mpz_clear(e);
 }
+
+void optimal_ate(fp12_elem *r, const G2_elem_affine *Q, const G1_elem_affine *P)
+{
+    G2_elem_affine R;
+    G2_identity_init_affine(&R);
+
+    miller_loop(r, &R, P, Q);
+    final_exponentiation(r, r);
+
+    G2_elem_free_affine(&R);
+}

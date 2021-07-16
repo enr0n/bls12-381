@@ -36,6 +36,8 @@ void fp2_square(fp2_elem *x, const fp2_elem *y);
 void fp2_inv(fp2_elem *x, const fp2_elem *y);
 void fp2_negate(fp2_elem *x, const fp2_elem *y);
 void fp2_conjugate(fp2_elem *x, const fp2_elem *y);
+void fp2_mul_nonresidue(fp2_elem *x, const fp2_elem *y);
+void fp2_mul_scalar(fp2_elem *x, const fp2_elem *y, const mpz_t m);
 
 int fp2_equal(const fp2_elem *e1, const fp2_elem *e2);
 

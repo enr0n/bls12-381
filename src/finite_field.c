@@ -215,6 +215,35 @@ void fp2_conjugate(fp2_elem *x, const fp2_elem *y)
     mpz_mod(x->b, x->b, g_BLS12_381_P);
 }
 
+void fp2_mul_nonresidue(fp2_elem *x, const fp2_elem *y)
+{
+    /**
+     * Need to multiply an element in F_p^2 by quadratic/cubic non-residue
+     * of this field that is used to construct F_p^6. In this case that is
+     * u + 1.
+     *
+     * This amounts to (a + bu)(u + 1) = au + a + bu^2 + bu
+     *                                 = au + a - b + bu      // since u^2 = beta = -1
+     *                                 = (a - b) + (a + b)u
+     */
+    fp2_elem r;
+
+    fp2_elem_init(&r);
+
+    fp_sub(r.a, y->a, y->b);
+    fp_add(r.b, y->a, y->b);
+
+    fp2_elem_set(x, &r);
+
+    fp2_elem_clear(&r);
+}
+
+void fp2_mul_scalar(fp2_elem *x, const fp2_elem *y, const mpz_t m)
+{
+   fp_mul(x->a, y->a, m);
+   fp_mul(x->b, y->b, m);
+}
+
 int fp2_equal(const fp2_elem *e1, const fp2_elem *e2)
 {
     return (mpz_cmp(e1->a, e2->a) == 0) && (mpz_cmp(e1->b, e2->b) == 0);
@@ -287,21 +316,6 @@ void fp6_sub(fp6_elem *x, const fp6_elem *y, const fp6_elem *z)
     fp2_sub(x->c, y->c, z->c);
 }
 
-static inline void fp2_mul_by_fp6_alpha(fp2_elem *x, const fp2_elem *y)
-{
-    /**
-     * Need to multiply an element in F_p^2 by the "alpha" parameter of F_p^6,
-     * which in this case is u + 1.
-     *
-     * This amounts to (a + bu)(u + 1) = au + a + bu^2 + bu
-     *                                 = au + a - b + bu      // since u^2 = beta = -1
-     *                                 = (a - b) + (a + b)u
-     */
-    assert(x != y);
-    fp_sub(x->a, y->a, y->b);
-    fp_add(x->b, y->a, y->b);
-}
-
 void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z)
 {
     /* Algorithm 5.21 */
@@ -326,7 +340,7 @@ void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z)
     fp2_mul(&ra, &ra, &tmp);
     fp2_sub(&ra, &ra, &v1);
     fp2_sub(&ra, &ra, &v2);
-    fp2_mul_by_fp6_alpha(&tmp, &ra);
+    fp2_mul_nonresidue(&tmp, &ra);
     fp2_add(&ra, &tmp, &v0);
 
     /* Line 5, assignment to c1 (x->b in our case). */
@@ -335,7 +349,7 @@ void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z)
     fp2_mul(&rb, &rb, &tmp);
     fp2_sub(&rb, &rb, &v0);
     fp2_sub(&rb, &rb, &v1);
-    fp2_mul_by_fp6_alpha(&tmp, &v2);
+    fp2_mul_nonresidue(&tmp, &v2);
     fp2_add(&rb, &rb, &tmp);
 
     /* Line 6, assignement to c2 (x->c in our case). */
@@ -376,7 +390,7 @@ void fp6_square(fp6_elem *x, const fp6_elem *y)
     fp2_mul(&v4, y->a, y->b);
     fp2_add(&v4, &v4, &v4);
     fp2_square(&v5, y->c);
-    fp2_mul_by_fp6_alpha(&rb, &v5);
+    fp2_mul_nonresidue(&rb, &v5);
     fp2_add(&rb, &rb, &v4);
 
     fp2_sub(&v2, &v4, &v5);
@@ -387,7 +401,7 @@ void fp6_square(fp6_elem *x, const fp6_elem *y)
     fp2_mul(&v5, y->b, y->c);
     fp2_add(&v5, &v5, &v5);
 
-    fp2_mul_by_fp6_alpha(&ra, &v5);
+    fp2_mul_nonresidue(&ra, &v5);
     fp2_add(&ra, &ra, &v3);
 
     fp2_add(&rc, &v2, &v4);
@@ -439,20 +453,20 @@ void fp6_inv(fp6_elem *x, const fp6_elem *y)
     fp2_mul(&v4, y->a, y->c);
     fp2_mul(&v5, y->b, y->c);
 
-    fp2_mul_by_fp6_alpha(&tmp, &v5);
+    fp2_mul_nonresidue(&tmp, &v5);
     fp2_sub(&A, &v0, &tmp);
 
-    fp2_mul_by_fp6_alpha(&tmp, &v2);
+    fp2_mul_nonresidue(&tmp, &v2);
     fp2_sub(&B, &tmp, &v3);
 
     fp2_sub(&C, &v1, &v4);
 
     fp2_mul(&v6, y->a, &A);
 
-    fp2_mul_by_fp6_alpha(&tmp, y->c);
+    fp2_mul_nonresidue(&tmp, y->c);
     fp2_mul(&tmp, &tmp, &B);
     fp2_add(&v6, &v6, &tmp);
-    fp2_mul_by_fp6_alpha(&tmp, y->b);
+    fp2_mul_nonresidue(&tmp, y->b);
     fp2_mul(&tmp, &tmp, &C);
     fp2_add(&v6, &v6, &tmp);
 
@@ -539,11 +553,11 @@ void fp12_sub(fp12_elem *x, const fp12_elem *y, const fp12_elem *z)
     fp6_sub(x->b, y->b, z->b);
 }
 
-static inline void fp6_mul_by_fp12_alpha(fp6_elem *x, const fp6_elem *y)
+static inline void fp6_mul_nonresidue(fp6_elem *x, const fp6_elem *y)
 {
     /**
-     * Need to multiply an element in F_p^6 by the "alpha" parameter of F_p^12,
-     * which in this case is v.
+     * Need to multiply an element in F_p^6 by the quadratic non-resiude in this
+     * field which is used to construct F_p^12.
      *
      * This amounts to (a + bv + bv^2)v = av + bv^2 + cv^3
      *                                  = av + bv^2 + c(u+1)  // since v^3 = u + 1
@@ -553,7 +567,7 @@ static inline void fp6_mul_by_fp12_alpha(fp6_elem *x, const fp6_elem *y)
 
     fp2_elem_init(&tmp);
 
-    fp2_mul_by_fp6_alpha(&tmp, y->c);
+    fp2_mul_nonresidue(&tmp, y->c);
 
     fp2_elem_set(x->c, y->b);
     fp2_elem_set(x->b, y->a);
@@ -577,7 +591,7 @@ void fp12_mul(fp12_elem *x, const fp12_elem *y, const fp12_elem *z)
     fp6_mul(&v0, y->a, z->a);
     fp6_mul(&v1, y->b, z->b);
 
-    fp6_mul_by_fp12_alpha(&tmp, &v1);
+    fp6_mul_nonresidue(&tmp, &v1);
     fp6_add(&ra, &v0, &tmp);
 
     fp6_add(&rb, y->a, y->b);
@@ -609,7 +623,7 @@ void fp12_square(fp12_elem *x, const fp12_elem *y)
 
     fp6_sub(&v0, y->a, y->b);
 
-    fp6_mul_by_fp12_alpha(&v2, y->b);
+    fp6_mul_nonresidue(&v2, y->b);
     fp6_sub(&v2, y->a, &v2);
 
     fp6_mul(&v1, y->a, y->b);
@@ -618,7 +632,7 @@ void fp12_square(fp12_elem *x, const fp12_elem *y)
 
     fp6_add(&rb, &v1, &v1);
 
-    fp6_mul_by_fp12_alpha(&v1, &v1);
+    fp6_mul_nonresidue(&v1, &v1);
     fp6_add(&ra, &v0, &v1);
 
     fp6_elem_set(x->a, &ra);
@@ -645,7 +659,7 @@ void fp12_inv(fp12_elem *x, const fp12_elem *y)
     fp6_square(&v0, y->a);
     fp6_square(&v1, y->b);
 
-    fp6_mul_by_fp12_alpha(&v1, &v1);
+    fp6_mul_nonresidue(&v1, &v1);
     fp6_sub(&v0, &v0, &v1);
     fp6_inv(&v1, &v0);
 

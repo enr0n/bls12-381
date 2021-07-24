@@ -536,3 +536,32 @@ void G2_add_mixed(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_affine *
     fp2_elem_clear(&rz);
     fp2_elem_clear(&b3);
 }
+
+void G2_mul_scalar(G2_elem_affine *r, const G2_elem_affine *P, const mpz_t m)
+{
+    G2_elem_proj r_proj, P_proj;
+    mp_bitcnt_t c;
+
+    G2_identity_init_proj(&P_proj);
+    G2_identity_init_proj(&r_proj);
+
+    G2_affine2proj(&P_proj, P);
+    G2_affine2proj(&r_proj, P);
+
+    c = (mp_bitcnt_t)mpz_sizeinbase(m, 2) - 2;
+    for (;;) {
+        G2_double_proj(&r_proj, &r_proj);
+
+        if (mpz_tstbit(m, c)) {
+            G2_add_proj(&r_proj, &r_proj, &P_proj);
+        }
+
+        if (!c) break;
+        c--;
+    }
+
+    G2_proj2affine(r, &r_proj);
+
+    G2_elem_free_proj(&P_proj);
+    G2_elem_free_proj(&r_proj);
+}

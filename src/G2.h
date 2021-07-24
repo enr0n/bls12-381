@@ -101,10 +101,12 @@ void G2_negate_proj(G2_elem_proj *r, const G2_elem_proj *P);
 /**
  * Group operations.
  *
- * Each of these returns the result in projective coordinates.
+ * The algorithms are all implemented using projective coordinates, but
+ * G2_mul_scalar uses affine parameters for convenience to the caller.
  */
 void G2_double_proj(G2_elem_proj *r, const G2_elem_proj *P);
 void G2_add_proj(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_proj *Q);
 void G2_add_mixed(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_affine *Q);
+void G2_mul_scalar(G2_elem_affine *r, const G2_elem_affine *P, const mpz_t m);
 
 #endif /* _G2_H_ */

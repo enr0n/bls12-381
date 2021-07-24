@@ -303,6 +303,40 @@ bool test_double_proj()
     return ret;
 }
 
+bool test_mul_scalar()
+{
+    printf("Running %s...\n", __func__);
+    bool ret;
+    G1_elem_affine P, actual, expect;
+    mpz_t m;
+
+    mpz_init_set_str(m, "0x0c9af8fcfd18dc6a102260d25e1de7918505fac80ef519d22b568298a56da71b", 0);
+    G1_elem_affine_from_str(&expect,
+        "0x055877e8edd635641c0b869e39903b0324ad8fc53736fc7d7f9795a539f556d0f19281364f22a97073172e9fe9cc9c7a",
+        "0x08539abef12abbecb497cf5eec349803e8b7afe5a7acdad2e4a8fe8519fdf4274f4b19438081db80a0275bc70f822c25"
+    );
+
+    G1_generator_init_affine(&P);
+    G1_identity_init_affine(&actual);
+
+    G1_mul_scalar(&actual, &P, m);
+
+    ret = G1_equiv_affine(&actual, &expect);
+    printf("Actual:\n");
+    printf("\tx: %s\n", mpz_get_str(NULL, 16, actual.x));
+    printf("\ty: %s\n", mpz_get_str(NULL, 16, actual.y));
+    printf("Expected:\n");
+    printf("\tx: %s\n", mpz_get_str(NULL, 16, expect.x));
+    printf("\ty: %s\n", mpz_get_str(NULL, 16, expect.y));
+
+    G1_elem_free_affine(&P);
+    G1_elem_free_affine(&actual);
+    G1_elem_free_affine(&expect);
+    mpz_clear(m);
+
+    return ret;
+}
+
 int main() {
     TEST_MAIN_INIT
     fp_params_init();
@@ -314,6 +348,7 @@ int main() {
     TEST_RUN(test_add_mixed());
     TEST_RUN(test_affine2proj());
     TEST_RUN(test_proj2affine());
+    TEST_RUN(test_mul_scalar());
 
     fp_params_free();
     TEST_MAIN_RETURN

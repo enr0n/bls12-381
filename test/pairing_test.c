@@ -194,6 +194,141 @@ int test_ate()
     return res;
 }
 
+int test_bilinearity()
+{
+    int res;
+
+    G1_elem_affine P, aP;
+    G2_elem_affine Q, bQ;
+    fp12_elem e, lhs, rhs;
+    mpz_t a, b, c;
+
+    G1_generator_init_affine(&P);
+    G1_identity_init_affine(&aP);
+    G2_generator_init_affine(&Q);
+    G2_identity_init_affine(&bQ);
+
+    fp12_elem_init(&e);
+    fp12_elem_init(&lhs);
+    fp12_elem_init(&rhs);
+
+    mpz_init_set_str(a, "0x0c9af8fcfd18dc6a102260d25e1de7918505fac80ef519d22b568298a56da71b", 0);
+    mpz_init_set_str(b, "0x70d9b6cc6d87df204c8dbc39e7b756c1c997f25837695c18785fdd9b26ef8b85", 0);
+    mpz_init(c);
+    mpz_mul(c, a, b);
+
+    ate(&e, &Q, &P);
+
+    // Check that ate(aP, Q) = e^a
+    G1_mul_scalar(&aP, &P, a);
+    ate(&lhs, &Q, &aP);
+    fp12_pow(&rhs, &e, a);
+
+    res = fp12_equal(&lhs, &rhs);
+    printf("LHS:    \n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, lhs.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, lhs.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, lhs.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, lhs.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, lhs.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, lhs.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, lhs.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, lhs.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, lhs.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, lhs.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, lhs.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, lhs.b->c->b));
+    printf("RHS:\n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, rhs.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, rhs.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, rhs.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, rhs.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, rhs.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, rhs.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, rhs.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, rhs.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, rhs.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, rhs.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, rhs.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, rhs.b->c->b));
+
+    // Check that ate(P, bQ) = e^b
+    G2_mul_scalar(&bQ, &Q, b);
+    ate(&lhs, &bQ, &P);
+    fp12_pow(&rhs, &e, b);
+
+    res = res && fp12_equal(&lhs, &rhs);
+    printf("LHS:    \n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, lhs.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, lhs.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, lhs.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, lhs.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, lhs.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, lhs.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, lhs.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, lhs.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, lhs.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, lhs.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, lhs.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, lhs.b->c->b));
+    printf("RHS:\n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, rhs.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, rhs.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, rhs.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, rhs.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, rhs.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, rhs.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, rhs.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, rhs.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, rhs.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, rhs.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, rhs.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, rhs.b->c->b));
+
+    // Check that ate(aP, bQ) = e^ab = e^c
+    ate(&lhs, &bQ, &aP);
+    fp12_pow(&rhs, &e, c);
+
+    res = res && fp12_equal(&lhs, &rhs);
+    printf("LHS:    \n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, lhs.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, lhs.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, lhs.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, lhs.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, lhs.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, lhs.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, lhs.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, lhs.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, lhs.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, lhs.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, lhs.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, lhs.b->c->b));
+    printf("RHS:\n");
+    printf("\ta0: %s\n", mpz_get_str(NULL, 16, rhs.a->a->a));
+    printf("\ta1: %s\n", mpz_get_str(NULL, 16, rhs.a->a->b));
+    printf("\ta2: %s\n", mpz_get_str(NULL, 16, rhs.a->b->a));
+    printf("\ta3: %s\n", mpz_get_str(NULL, 16, rhs.a->b->b));
+    printf("\ta4: %s\n", mpz_get_str(NULL, 16, rhs.a->c->a));
+    printf("\ta5: %s\n", mpz_get_str(NULL, 16, rhs.a->c->b));
+    printf("\tb0: %s\n", mpz_get_str(NULL, 16, rhs.b->a->a));
+    printf("\tb1: %s\n", mpz_get_str(NULL, 16, rhs.b->a->b));
+    printf("\tb2: %s\n", mpz_get_str(NULL, 16, rhs.b->b->a));
+    printf("\tb3: %s\n", mpz_get_str(NULL, 16, rhs.b->b->b));
+    printf("\tb4: %s\n", mpz_get_str(NULL, 16, rhs.b->c->a));
+    printf("\tb5: %s\n", mpz_get_str(NULL, 16, rhs.b->c->b));
+
+    fp12_elem_clear(&e);
+    fp12_elem_clear(&lhs);
+    fp12_elem_clear(&rhs);
+    G1_elem_free_affine(&P);
+    G1_elem_free_affine(&aP);
+    G2_elem_free_affine(&Q);
+    G2_elem_free_affine(&bQ);
+    mpz_clears(a, b, c, NULL);
+
+    return res;
+}
+
 int main()
 {
     int result, pass_count, fail_count;
@@ -224,6 +359,16 @@ int main()
 
     printf("Running test_ate...\n");
     result = test_ate();
+    if (!result) {
+        printf("FAIL\n\n");
+        fail_count++;
+    } else {
+        printf("PASS\n\n");
+        pass_count++;
+    }
+
+    printf("Running test_bilinearity...\n");
+    result = test_bilinearity();
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;

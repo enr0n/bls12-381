@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 #include "finite_field.h"
-#include "G1.h"
-#include "G2.h"
 #include "pairing.h"
+
+#include "BLS12_381.h"
 
 int test_final_exponentiation()
 {

@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #include "finite_field.h"
-#include "G1.h"
+#include "BLS12_381.h"
 
 #define TEST_UNIMPL \
     printf("Test %s is not implemented!\n", __func__); \

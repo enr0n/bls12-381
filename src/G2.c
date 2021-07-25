@@ -1,12 +1,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
-
 #include <gmp.h>
 
-#include "params.h"
 #include "finite_field.h"
 
-#include "G2.h"
+#include "BLS12_381.h"
 
 void G2_affine2proj(G2_elem_proj *proj, const G2_elem_affine *affn)
 {

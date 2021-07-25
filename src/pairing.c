@@ -2,12 +2,10 @@
 #include <stdio.h>
 #include <gmp.h>
 
-#include "params.h"
 #include "finite_field.h"
-#include "G1.h"
-#include "G2.h"
-
 #include "pairing.h"
+
+#include "BLS12_381.h"
 
 /**
  * The curve parameter t which parameterizes p(t) and r(t).

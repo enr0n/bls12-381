@@ -20,7 +20,8 @@
 #include <gmp.h>
 
 #include "finite_field.h"
-#include "params.h"
+
+#include "BLS12_381.h"
 
 /**
  * The prime P which is the characteristic of the finite fields.

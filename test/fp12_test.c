@@ -59,8 +59,8 @@
     printf("\tb3: %s\n", mpz_get_str(NULL, 16, expect.b->b->b)); \
     printf("\tb4: %s\n", mpz_get_str(NULL, 16, expect.b->c->a)); \
     printf("\tb5: %s\n", mpz_get_str(NULL, 16, expect.b->c->b)); \
-    fp12_elem_clear(&actual);                                    \
-    fp12_elem_clear(&expect);                                    \
+    fp12_elem_free(&actual);                                    \
+    fp12_elem_free(&expect);                                    \
                                                                  \
     return res;
 
@@ -354,8 +354,8 @@ int test_fp12_pow(const fp12_elem *e1)
 
     res = res && fp12_equal(&actual, &expect);
 
-    fp12_elem_clear(&actual);
-    fp12_elem_clear(&expect);
+    fp12_elem_free(&actual);
+    fp12_elem_free(&expect);
     mpz_clear(exp);
 
     return res;
@@ -432,8 +432,8 @@ int main()
         pass_count++;
     }
 
-    fp12_elem_clear(&e1);
-    fp12_elem_clear(&e2);
+    fp12_elem_free(&e1);
+    fp12_elem_free(&e2);
 
     fp_params_free();
 

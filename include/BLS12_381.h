@@ -107,7 +107,7 @@ typedef struct fp12_elem {
 void fp12_elem_init(fp12_elem *e);
 void fp12_elem_set(fp12_elem *e1, const fp12_elem *e2);
 void fp12_elem_from_str(fp12_elem *e, const char *a[6], const char *b[6]);
-void fp12_elem_clear(fp12_elem *e);
+void fp12_elem_free(fp12_elem *e);
 
 /**
  * Arithmetic operations in the field extension F_p^12. This field is implemented
@@ -125,8 +125,7 @@ void fp12_pow(fp12_elem *x, const fp12_elem *y, const mpz_t exp);
 void fp12_inv(fp12_elem *x, const fp12_elem *y);
 void fp12_conjugate(fp12_elem *x, const fp12_elem *y);
 void fp12_frobenius(fp12_elem *x, const fp12_elem *y);
-
-int fp12_equal(const fp12_elem *e1, const fp12_elem *e2);
+bool fp12_equal(const fp12_elem *e1, const fp12_elem *e2);
 
 /**
  * G_1 is the group of r-torsion points of the curve E: y^2 = x^3 + 4 which are

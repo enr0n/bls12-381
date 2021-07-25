@@ -77,8 +77,8 @@ int test_final_exponentiation()
     printf("\tb3: %s\n", mpz_get_str(NULL, 16, expect.b->b->b));
     printf("\tb4: %s\n", mpz_get_str(NULL, 16, expect.b->c->a));
     printf("\tb5: %s\n", mpz_get_str(NULL, 16, expect.b->c->b));
-    fp12_elem_clear(&actual);
-    fp12_elem_clear(&expect);
+    fp12_elem_free(&actual);
+    fp12_elem_free(&expect);
 
     return res;
 }
@@ -117,7 +117,7 @@ int test_miller_loop_point_acc()
     printf("\ty0: %s\n", mpz_get_str(NULL, 16, expect.y->a));
     printf("\ty1: %s\n", mpz_get_str(NULL, 16, expect.y->b));
 
-    fp12_elem_clear(&tmp);
+    fp12_elem_free(&tmp);
 
     G1_elem_free_affine(&P);
     G2_elem_free_affine(&Q);
@@ -185,8 +185,8 @@ int test_ate()
     printf("\tb3: %s\n", mpz_get_str(NULL, 16, expect.b->b->b));
     printf("\tb4: %s\n", mpz_get_str(NULL, 16, expect.b->c->a));
     printf("\tb5: %s\n", mpz_get_str(NULL, 16, expect.b->c->b));
-    fp12_elem_clear(&actual);
-    fp12_elem_clear(&expect);
+    fp12_elem_free(&actual);
+    fp12_elem_free(&expect);
 
     G1_elem_free_affine(&P);
     G2_elem_free_affine(&Q);
@@ -317,9 +317,9 @@ int test_bilinearity()
     printf("\tb4: %s\n", mpz_get_str(NULL, 16, rhs.b->c->a));
     printf("\tb5: %s\n", mpz_get_str(NULL, 16, rhs.b->c->b));
 
-    fp12_elem_clear(&e);
-    fp12_elem_clear(&lhs);
-    fp12_elem_clear(&rhs);
+    fp12_elem_free(&e);
+    fp12_elem_free(&lhs);
+    fp12_elem_free(&rhs);
     G1_elem_free_affine(&P);
     G1_elem_free_affine(&aP);
     G2_elem_free_affine(&Q);

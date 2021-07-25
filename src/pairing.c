@@ -87,11 +87,11 @@ void final_exponentiation(fp12_elem *r, const fp12_elem *f)
 
     fp12_elem_set(r, &fr);
 
-    fp12_elem_clear(&fr);
-    fp12_elem_clear(&t0);
-    fp12_elem_clear(&t1);
-    fp12_elem_clear(&t2);
-    fp12_elem_clear(&t3);
+    fp12_elem_free(&fr);
+    fp12_elem_free(&t0);
+    fp12_elem_free(&t1);
+    fp12_elem_free(&t2);
+    fp12_elem_free(&t3);
 }
 
 static void line_function_double(fp12_elem *l, const G2_elem_proj *A, const G1_elem_affine *P)
@@ -132,11 +132,11 @@ static void line_function_double(fp12_elem *l, const G2_elem_proj *A, const G1_e
 
     fp12_elem_set(l, &r);
 
-    fp2_elem_clear(&r0);
-    fp2_elem_clear(&r2);
-    fp2_elem_clear(&r3);
-    fp2_elem_clear(&tmp);
-    fp12_elem_clear(&r);
+    fp2_elem_free(&r0);
+    fp2_elem_free(&r2);
+    fp2_elem_free(&r3);
+    fp2_elem_free(&tmp);
+    fp12_elem_free(&r);
 }
 
 static void line_function_add(fp12_elem *l, const G2_elem_proj *A, const G2_elem_proj *B, const G1_elem_affine *P)
@@ -180,13 +180,13 @@ static void line_function_add(fp12_elem *l, const G2_elem_proj *A, const G2_elem
 
     fp12_elem_set(l, &r);
 
-    fp2_elem_clear(&r0);
-    fp2_elem_clear(&r2);
-    fp2_elem_clear(&r3);
-    fp2_elem_clear(&t1);
-    fp2_elem_clear(&t2);
-    fp2_elem_clear(&tmp);
-    fp12_elem_clear(&r);
+    fp2_elem_free(&r0);
+    fp2_elem_free(&r2);
+    fp2_elem_free(&r3);
+    fp2_elem_free(&t1);
+    fp2_elem_free(&t2);
+    fp2_elem_free(&tmp);
+    fp12_elem_free(&r);
 }
 
 /**
@@ -286,9 +286,9 @@ void miller_loop(fp12_elem *r, G2_elem_affine *R, const G1_elem_affine *P, const
     fp12_elem_set(r, &fr);
     G2_proj2affine(R, &T);
 
-    fp12_elem_clear(&fr);
-    fp12_elem_clear(&l);
-    fp12_elem_clear(&tmp);
+    fp12_elem_free(&fr);
+    fp12_elem_free(&l);
+    fp12_elem_free(&tmp);
     G2_elem_free_proj(&T);
     G2_elem_free_proj(&Q_proj);
     G2_elem_free_proj(&Q_neg);

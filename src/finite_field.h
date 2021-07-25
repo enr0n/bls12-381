@@ -25,7 +25,7 @@ void fp2_elem_init(fp2_elem *e);
 void fp2_elem_set(fp2_elem *e1, const fp2_elem *e2);
 void fp2_elem_set_si(fp2_elem *e, signed long int a, signed long int b);
 void fp2_elem_from_str(fp2_elem *e, const char *a, const char *b);
-void fp2_elem_clear(fp2_elem *e);
+void fp2_elem_free(fp2_elem *e);
 
 char *fp2_elem_get_str(const fp2_elem *e);
 
@@ -39,8 +39,7 @@ void fp2_negate(fp2_elem *x, const fp2_elem *y);
 void fp2_conjugate(fp2_elem *x, const fp2_elem *y);
 void fp2_mul_nonresidue(fp2_elem *x, const fp2_elem *y);
 void fp2_mul_scalar(fp2_elem *x, const fp2_elem *y, const mpz_t m);
-
-int fp2_equal(const fp2_elem *e1, const fp2_elem *e2);
+bool fp2_equal(const fp2_elem *e1, const fp2_elem *e2);
 
 void fp6_elem_init(fp6_elem *e);
 void fp6_elem_set(fp6_elem *e1, const fp6_elem *e2);
@@ -48,7 +47,7 @@ void fp6_elem_from_str(fp6_elem *e,
                        const char *a1, const char *a2,
                        const char *b1, const char *b2,
                        const char *c1, const char *c2);
-void fp6_elem_clear(fp6_elem *e);
+void fp6_elem_free(fp6_elem *e);
 
 char *fp6_elem_get_str(const fp6_elem *e);
 
@@ -62,7 +61,6 @@ void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z);
 void fp6_square(fp6_elem *x, const fp6_elem *y);
 void fp6_inv(fp6_elem *x, const fp6_elem *y);
 void fp6_negate(fp6_elem *x, const fp6_elem *y);
-
-int fp6_equal(const fp6_elem *e1, const fp6_elem *e2);
+bool fp6_equal(const fp6_elem *e1, const fp6_elem *e2);
 
 #endif // _FINITE_FIELD_H_

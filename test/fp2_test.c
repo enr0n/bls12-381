@@ -23,8 +23,8 @@
     printf("Expected:\n");                                \
     printf("\ta: %s\n", mpz_get_str(NULL, 16, expect.a)); \
     printf("\tb: %s\n", mpz_get_str(NULL, 16, expect.b)); \
-    fp2_elem_clear(&actual);                              \
-    fp2_elem_clear(&expect);                              \
+    fp2_elem_free(&actual);                              \
+    fp2_elem_free(&expect);                              \
                                                           \
     return res;
 
@@ -130,8 +130,8 @@ int main()
         pass_count++;
     }
 
-    fp2_elem_clear(&e1);
-    fp2_elem_clear(&e2);
+    fp2_elem_free(&e1);
+    fp2_elem_free(&e2);
 
     fp_params_free();
 

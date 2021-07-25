@@ -41,7 +41,7 @@ void G2_proj2affine(G2_elem_affine *affn, const G2_elem_proj *proj)
     fp2_mul(affn->x, proj->x, &zinv);
     fp2_mul(affn->y, proj->y, &zinv);
 
-    fp2_elem_clear(&zinv);
+    fp2_elem_free(&zinv);
 }
 
 void G2_elem_affine_from_str(G2_elem_affine *P,
@@ -123,15 +123,15 @@ void G2_generator_init_proj(G2_elem_proj *g)
 
 void G2_elem_free_affine(G2_elem_affine *P)
 {
-    fp2_elem_clear(P->x);
-    fp2_elem_clear(P->y);
+    fp2_elem_free(P->x);
+    fp2_elem_free(P->y);
 }
 
 void G2_elem_free_proj(G2_elem_proj *P)
 {
-    fp2_elem_clear(P->x);
-    fp2_elem_clear(P->y);
-    fp2_elem_clear(P->z);
+    fp2_elem_free(P->x);
+    fp2_elem_free(P->y);
+    fp2_elem_free(P->z);
 }
 
 bool G2_is_on_curve_affine(const G2_elem_affine *P)
@@ -161,9 +161,9 @@ bool G2_is_on_curve_affine(const G2_elem_affine *P)
 
     ret = fp2_equal(&lhs, &rhs);
 
-    fp2_elem_clear(&lhs);
-    fp2_elem_clear(&rhs);
-    fp2_elem_clear(&tmp);
+    fp2_elem_free(&lhs);
+    fp2_elem_free(&rhs);
+    fp2_elem_free(&tmp);
 
     return ret;
 }
@@ -206,10 +206,10 @@ bool G2_is_on_curve_proj(const G2_elem_proj *P)
 
     ret = fp2_equal(&lhs, &rhs);
 
-    fp2_elem_clear(&lhs);
-    fp2_elem_clear(&rhs);
-    fp2_elem_clear(&tmp1);
-    fp2_elem_clear(&tmp2);
+    fp2_elem_free(&lhs);
+    fp2_elem_free(&rhs);
+    fp2_elem_free(&tmp1);
+    fp2_elem_free(&tmp2);
 
     return ret;
 }
@@ -274,10 +274,10 @@ bool G2_equiv_proj(const G2_elem_proj *P, const G2_elem_proj *Q)
 
     ret = (fp2_equal(&x_lhs, &x_rhs) && fp2_equal(&y_lhs, &y_rhs));
 
-    fp2_elem_clear(&x_lhs);
-    fp2_elem_clear(&x_rhs);
-    fp2_elem_clear(&y_lhs);
-    fp2_elem_clear(&y_rhs);
+    fp2_elem_free(&x_lhs);
+    fp2_elem_free(&x_rhs);
+    fp2_elem_free(&y_lhs);
+    fp2_elem_free(&y_rhs);
 
     return ret;
 }
@@ -382,15 +382,15 @@ void G2_add_proj(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_proj *Q)
     fp2_elem_set(r->y, &ry);
     fp2_elem_set(r->z, &rz);
 
-    fp2_elem_clear(&t0);
-    fp2_elem_clear(&t1);
-    fp2_elem_clear(&t2);
-    fp2_elem_clear(&t3);
-    fp2_elem_clear(&t4);
-    fp2_elem_clear(&rx);
-    fp2_elem_clear(&ry);
-    fp2_elem_clear(&rz);
-    fp2_elem_clear(&b3);
+    fp2_elem_free(&t0);
+    fp2_elem_free(&t1);
+    fp2_elem_free(&t2);
+    fp2_elem_free(&t3);
+    fp2_elem_free(&t4);
+    fp2_elem_free(&rx);
+    fp2_elem_free(&ry);
+    fp2_elem_free(&rz);
+    fp2_elem_free(&b3);
 }
 
 void G2_double_proj(G2_elem_proj *r, const G2_elem_proj *P)
@@ -446,13 +446,13 @@ void G2_double_proj(G2_elem_proj *r, const G2_elem_proj *P)
     fp2_elem_set(r->y, &ry);
     fp2_elem_set(r->z, &rz);
 
-    fp2_elem_clear(&t0);
-    fp2_elem_clear(&t1);
-    fp2_elem_clear(&t2);
-    fp2_elem_clear(&rx);
-    fp2_elem_clear(&ry);
-    fp2_elem_clear(&rz);
-    fp2_elem_clear(&b3);
+    fp2_elem_free(&t0);
+    fp2_elem_free(&t1);
+    fp2_elem_free(&t2);
+    fp2_elem_free(&rx);
+    fp2_elem_free(&ry);
+    fp2_elem_free(&rz);
+    fp2_elem_free(&b3);
 }
 
 void G2_add_mixed(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_affine *Q)
@@ -524,15 +524,15 @@ void G2_add_mixed(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_affine *
     fp2_elem_set(r->y, &ry);
     fp2_elem_set(r->z, &rz);
 
-    fp2_elem_clear(&t0);
-    fp2_elem_clear(&t1);
-    fp2_elem_clear(&t2);
-    fp2_elem_clear(&t3);
-    fp2_elem_clear(&t4);
-    fp2_elem_clear(&rx);
-    fp2_elem_clear(&ry);
-    fp2_elem_clear(&rz);
-    fp2_elem_clear(&b3);
+    fp2_elem_free(&t0);
+    fp2_elem_free(&t1);
+    fp2_elem_free(&t2);
+    fp2_elem_free(&t3);
+    fp2_elem_free(&t4);
+    fp2_elem_free(&rx);
+    fp2_elem_free(&ry);
+    fp2_elem_free(&rz);
+    fp2_elem_free(&b3);
 }
 
 void G2_mul_scalar(G2_elem_affine *r, const G2_elem_affine *P, const mpz_t m)

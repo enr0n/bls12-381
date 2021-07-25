@@ -36,8 +36,8 @@
     printf("\tb1: %s\n", mpz_get_str(NULL, 16, expect.b->b)); \
     printf("\tc0: %s\n", mpz_get_str(NULL, 16, expect.c->a)); \
     printf("\tc1: %s\n", mpz_get_str(NULL, 16, expect.c->b)); \
-    fp6_elem_clear(&actual);                                  \
-    fp6_elem_clear(&expect);                                  \
+    fp6_elem_free(&actual);                                  \
+    fp6_elem_free(&expect);                                  \
                                                               \
     return res;
 
@@ -167,8 +167,8 @@ int main()
         pass_count++;
     }
 
-    fp6_elem_clear(&e1);
-    fp6_elem_clear(&e2);
+    fp6_elem_free(&e1);
+    fp6_elem_free(&e2);
 
     fp_params_free();
 

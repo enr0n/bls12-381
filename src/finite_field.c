@@ -97,7 +97,7 @@ void fp2_elem_from_str(fp2_elem *e, const char *a, const char *b)
     mpz_init_set_str(e->b, b, 0);
 }
 
-void fp2_elem_clear(fp2_elem *e)
+void fp2_elem_free(fp2_elem *e)
 {
     mpz_clears(e->a, e->b, NULL);
 }
@@ -236,7 +236,7 @@ void fp2_mul_nonresidue(fp2_elem *x, const fp2_elem *y)
 
     fp2_elem_set(x, &r);
 
-    fp2_elem_clear(&r);
+    fp2_elem_free(&r);
 }
 
 void fp2_mul_scalar(fp2_elem *x, const fp2_elem *y, const mpz_t m)
@@ -245,7 +245,7 @@ void fp2_mul_scalar(fp2_elem *x, const fp2_elem *y, const mpz_t m)
    fp_mul(x->b, y->b, m);
 }
 
-int fp2_equal(const fp2_elem *e1, const fp2_elem *e2)
+bool fp2_equal(const fp2_elem *e1, const fp2_elem *e2)
 {
     return (mpz_cmp(e1->a, e2->a) == 0) && (mpz_cmp(e1->b, e2->b) == 0);
 }
@@ -282,11 +282,11 @@ void fp6_elem_from_str(fp6_elem *e,
     fp2_elem_from_str(e->c, c1, c2);
 }
 
-void fp6_elem_clear(fp6_elem *e)
+void fp6_elem_free(fp6_elem *e)
 {
-    fp2_elem_clear(e->a);
-    fp2_elem_clear(e->b);
-    fp2_elem_clear(e->c);
+    fp2_elem_free(e->a);
+    fp2_elem_free(e->b);
+    fp2_elem_free(e->c);
 }
 
 char *fp6_elem_get_str(const fp6_elem *e)
@@ -364,14 +364,14 @@ void fp6_mul(fp6_elem *x, const fp6_elem *y, const fp6_elem *z)
     fp2_elem_set(x->a, &ra);
     fp2_elem_set(x->b, &rb);
     fp2_elem_set(x->c, &rc);
-    fp2_elem_clear(&ra);
-    fp2_elem_clear(&rb);
-    fp2_elem_clear(&rc);
+    fp2_elem_free(&ra);
+    fp2_elem_free(&rb);
+    fp2_elem_free(&rc);
 
-    fp2_elem_clear(&v0);
-    fp2_elem_clear(&v1);
-    fp2_elem_clear(&v2);
-    fp2_elem_clear(&tmp);
+    fp2_elem_free(&v0);
+    fp2_elem_free(&v1);
+    fp2_elem_free(&v2);
+    fp2_elem_free(&tmp);
 }
 
 void fp6_square(fp6_elem *x, const fp6_elem *y)
@@ -412,14 +412,14 @@ void fp6_square(fp6_elem *x, const fp6_elem *y)
     fp2_elem_set(x->a, &ra);
     fp2_elem_set(x->b, &rb);
     fp2_elem_set(x->c, &rc);
-    fp2_elem_clear(&ra);
-    fp2_elem_clear(&rb);
-    fp2_elem_clear(&rc);
+    fp2_elem_free(&ra);
+    fp2_elem_free(&rb);
+    fp2_elem_free(&rc);
 
-    fp2_elem_clear(&v2);
-    fp2_elem_clear(&v3);
-    fp2_elem_clear(&v4);
-    fp2_elem_clear(&v5);
+    fp2_elem_free(&v2);
+    fp2_elem_free(&v3);
+    fp2_elem_free(&v4);
+    fp2_elem_free(&v5);
 }
 
 void fp6_inv(fp6_elem *x, const fp6_elem *y)
@@ -480,22 +480,22 @@ void fp6_inv(fp6_elem *x, const fp6_elem *y)
     fp2_elem_set(x->a, &ra);
     fp2_elem_set(x->b, &rb);
     fp2_elem_set(x->c, &rc);
-    fp2_elem_clear(&ra);
-    fp2_elem_clear(&rb);
-    fp2_elem_clear(&rc);
+    fp2_elem_free(&ra);
+    fp2_elem_free(&rb);
+    fp2_elem_free(&rc);
 
-    fp2_elem_clear(&v0);
-    fp2_elem_clear(&v1);
-    fp2_elem_clear(&v2);
-    fp2_elem_clear(&v3);
-    fp2_elem_clear(&v4);
-    fp2_elem_clear(&v5);
-    fp2_elem_clear(&v6);
-    fp2_elem_clear(&A);
-    fp2_elem_clear(&B);
-    fp2_elem_clear(&C);
-    fp2_elem_clear(&F);
-    fp2_elem_clear(&tmp);
+    fp2_elem_free(&v0);
+    fp2_elem_free(&v1);
+    fp2_elem_free(&v2);
+    fp2_elem_free(&v3);
+    fp2_elem_free(&v4);
+    fp2_elem_free(&v5);
+    fp2_elem_free(&v6);
+    fp2_elem_free(&A);
+    fp2_elem_free(&B);
+    fp2_elem_free(&C);
+    fp2_elem_free(&F);
+    fp2_elem_free(&tmp);
 }
 
 void fp6_negate(fp6_elem *x, const fp6_elem *y)
@@ -505,7 +505,7 @@ void fp6_negate(fp6_elem *x, const fp6_elem *y)
     fp2_negate(x->c, y->c);
 }
 
-int fp6_equal(const fp6_elem *e1, const fp6_elem *e2)
+bool fp6_equal(const fp6_elem *e1, const fp6_elem *e2)
 {
     return fp2_equal(e1->a, e2->a) &&
            fp2_equal(e1->b, e2->b) &&
@@ -536,10 +536,10 @@ void fp12_elem_from_str(fp12_elem *e, const char *a[6], const char *b[6])
     fp6_elem_from_str(e->b, b[0], b[1], b[2], b[3], b[4], b[5]);
 }
 
-void fp12_elem_clear(fp12_elem *e)
+void fp12_elem_free(fp12_elem *e)
 {
-    fp6_elem_clear(e->a);
-    fp6_elem_clear(e->b);
+    fp6_elem_free(e->a);
+    fp6_elem_free(e->b);
 }
 
 void fp12_add(fp12_elem *x, const fp12_elem *y, const fp12_elem *z)
@@ -574,7 +574,7 @@ static inline void fp6_mul_nonresidue(fp6_elem *x, const fp6_elem *y)
     fp2_elem_set(x->b, y->a);
     fp2_elem_set(x->a, &tmp);
 
-    fp2_elem_clear(&tmp);
+    fp2_elem_free(&tmp);
 }
 
 void fp12_mul(fp12_elem *x, const fp12_elem *y, const fp12_elem *z)
@@ -604,11 +604,11 @@ void fp12_mul(fp12_elem *x, const fp12_elem *y, const fp12_elem *z)
     fp6_elem_set(x->a, &ra);
     fp6_elem_set(x->b, &rb);
 
-    fp6_elem_clear(&v0);
-    fp6_elem_clear(&v1);
-    fp6_elem_clear(&tmp);
-    fp6_elem_clear(&ra);
-    fp6_elem_clear(&rb);
+    fp6_elem_free(&v0);
+    fp6_elem_free(&v1);
+    fp6_elem_free(&tmp);
+    fp6_elem_free(&ra);
+    fp6_elem_free(&rb);
 }
 
 void fp12_square(fp12_elem *x, const fp12_elem *y)
@@ -639,11 +639,11 @@ void fp12_square(fp12_elem *x, const fp12_elem *y)
     fp6_elem_set(x->a, &ra);
     fp6_elem_set(x->b, &rb);
 
-    fp6_elem_clear(&v0);
-    fp6_elem_clear(&v1);
-    fp6_elem_clear(&v2);
-    fp6_elem_clear(&ra);
-    fp6_elem_clear(&rb);
+    fp6_elem_free(&v0);
+    fp6_elem_free(&v1);
+    fp6_elem_free(&v2);
+    fp6_elem_free(&ra);
+    fp6_elem_free(&rb);
 }
 
 void fp12_inv(fp12_elem *x, const fp12_elem *y)
@@ -673,11 +673,11 @@ void fp12_inv(fp12_elem *x, const fp12_elem *y)
     fp6_elem_set(x->a, &ra);
     fp6_elem_set(x->b, &rb);
 
-    fp6_elem_clear(&v0);
-    fp6_elem_clear(&v1);
-    fp6_elem_clear(&ra);
-    fp6_elem_clear(&rb);
-    fp6_elem_clear(&tmp);
+    fp6_elem_free(&v0);
+    fp6_elem_free(&v1);
+    fp6_elem_free(&ra);
+    fp6_elem_free(&rb);
+    fp6_elem_free(&tmp);
 }
 
 void fp12_pow(fp12_elem *x, const fp12_elem *y, const mpz_t exp)
@@ -723,7 +723,7 @@ void fp12_pow(fp12_elem *x, const fp12_elem *y, const mpz_t exp)
 
     fp12_elem_set(x, &r);
 
-    fp12_elem_clear(&r);
+    fp12_elem_free(&r);
     mpz_clear(e);
 }
 
@@ -733,7 +733,7 @@ void fp12_conjugate(fp12_elem *x, const fp12_elem *y)
     fp6_negate(x->b, y->b);
 }
 
-int fp12_equal(const fp12_elem *e1, const fp12_elem *e2)
+bool fp12_equal(const fp12_elem *e1, const fp12_elem *e2)
 {
     return fp6_equal(e1->a, e2->a) && fp6_equal(e1->b, e2->b);
 }
@@ -803,15 +803,15 @@ void fp12_frobenius(fp12_elem *x, const fp12_elem *y)
     fp2_elem_set(x->a->c, &t5);
     fp2_elem_set(x->b->c, &t6);
 
-    fp2_elem_clear(&t1);
-    fp2_elem_clear(&t2);
-    fp2_elem_clear(&t3);
-    fp2_elem_clear(&t4);
-    fp2_elem_clear(&t5);
-    fp2_elem_clear(&t6);
-    fp2_elem_clear(&gamma1);
-    fp2_elem_clear(&gamma2);
-    fp2_elem_clear(&gamma3);
-    fp2_elem_clear(&gamma4);
-    fp2_elem_clear(&gamma5);
+    fp2_elem_free(&t1);
+    fp2_elem_free(&t2);
+    fp2_elem_free(&t3);
+    fp2_elem_free(&t4);
+    fp2_elem_free(&t5);
+    fp2_elem_free(&t6);
+    fp2_elem_free(&gamma1);
+    fp2_elem_free(&gamma2);
+    fp2_elem_free(&gamma3);
+    fp2_elem_free(&gamma4);
+    fp2_elem_free(&gamma5);
 }

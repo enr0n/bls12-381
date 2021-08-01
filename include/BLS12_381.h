@@ -1,7 +1,9 @@
 #ifndef BLS12_381_H
 #define BLS12_381_H
 
+#include <stdint.h>
 #include <stdbool.h>
+
 #include <gmp.h>
 
 /**
@@ -339,5 +341,15 @@ void G2_mul_scalar(G2_elem_affine *r, const G2_elem_affine *P, const mpz_t m);
  * computation includes the final exponentiation.
  */
 void BLS12_381_pairing(fp12_elem *r, const G2_elem_affine *Q, const G1_elem_affine *P);
+
+/**
+ * Hash the byte string to a point in G_1.
+ */
+void BLS12_381_hash_to_G1(G1_elem_affine *P, const uint8_t *bytes);
+
+/**
+ * Hash the byte string to a point in G_2.
+ */
+void BLS12_381_hash_to_G2(G2_elem_affine *P, const uint8_t *bytes);
 
 #endif /* BLS12_381_H */

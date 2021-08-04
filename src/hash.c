@@ -64,7 +64,6 @@ int expand_message_xmd(octet_string *bytes, const char *msg, const char *DST, ui
 
     octet_strcat(msg_prime, I2OSP(arg, 0, R_IN_BYTES));
     octet_string_appendn(msg_prime, (uint8_t*)msg, strlen(msg));
-
     octet_strcat(msg_prime, I2OSP(arg, len_in_bytes, 2));
     octet_string_append(msg_prime, 0x0);
     octet_strcat(msg_prime, DST_prime);

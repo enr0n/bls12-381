@@ -35,11 +35,12 @@ octet_string *I2OSP(octet_string *o, int x, int x_len)
     octet_string_alloc(&tmp, x_len);
 
     for (int i = 1; i <= x_len && x != 0; i++) {
-        tmp->data[x_len - 1] = x % 256;
+        tmp->data[x_len - i] = x % 256;
         x /= 256;
     }
     tmp->len = x_len;
 
+    octet_string_reset(o);
     octet_strcpy(o, tmp);
     octet_string_free(tmp);
 

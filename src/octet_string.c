@@ -39,7 +39,7 @@ void octet_string_reset(octet_string *o)
     o->len = 0;
 }
 
-char *octet_string_to_str(octet_string *o)
+char *octet_string_to_str(const octet_string *o)
 {
     char *str;
 
@@ -87,6 +87,21 @@ octet_string *octet_string_appendn(octet_string *dest, uint8_t *bytes, uint32_t 
         dest->data[dest->len + i] = bytes[i];
     }
     dest->len += n;
+
+    return dest;
+}
+
+octet_string *octet_substr(octet_string *dest, const octet_string *src,
+                           uint32_t start, uint32_t len)
+{
+    if (dest->cap < len) {
+        octet_string_realloc(dest, len);
+    }
+
+    for (int i = 0; i < len; i++) {
+        dest->data[i] = src->data[start + i];
+    }
+    dest->len = len;
 
     return dest;
 }

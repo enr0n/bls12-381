@@ -6,6 +6,8 @@
 
 #include <gmp.h>
 
+#include "finite_field.h"
+
 #include "hash.h"
 
 #define TEST_MAIN_INIT                  \
@@ -31,6 +33,7 @@
 /* Test vectors from https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-11#appendix-K.1 */
 #define EXPAND_MESSAGE_XMD_TEST_DST "QUUX-V01-CS02-with-expander"
 #define G1_TEST_DST "QUUX-V01-CS02-with-BLS12381G1_XMD:SHA-256_SSWU_RO_"
+#define G2_TEST_DST "QUUX-V01-CS02-with-BLS12381G2_XMD:SHA-256_SSWU_RO_"
 
 const char *test_vec_msg[10] = {
     "",
@@ -85,6 +88,38 @@ const char *test_vec_G1_field_elems_1[5] = {
     "0x0cdc3e2f271f29c4ff75020857ce6c5d36008c9b48385ea2f2bf6f96f428a3deb798aa033cd482d1cdc8b30178b08e3a",
     "0x0b1a912064fb0554b180e07af7e787f1f883a0470759c03c1b6509eb8ce980d1670305ae7b928226bb58fdc0a419f46e",
     "0x05d487032f602c90fa7625dbafe0f4a49ef4a6b0b33d7bb349ff4cf5410d297fd6241876e3e77b651cfc8191e40a68b7"
+};
+
+const char *test_vec_G2_field_elems_0_0[5] = {
+    "0x03dbc2cce174e91ba93cbb08f26b917f98194a2ea08d1cce75b2b9cc9f21689d80bd79b594a613d0a68eb807dfdc1cf8",
+    "0x15f7c0aa8f6b296ab5ff9c2c7581ade64f4ee6f1bf18f55179ff44a2cf355fa53dd2a2158c5ecb17d7c52f63e7195771",
+    "0x0313d9325081b415bfd4e5364efaef392ecf69b087496973b229303e1816d2080971470f7da112c4eb43053130b785e1",
+    "0x025820cefc7d06fd38de7d8e370e0da8a52498be9b53cba9927b2ef5c6de1e12e12f188bbc7bc923864883c57e49e253",
+    "0x190b513da3e66fc9a3587b78c76d1d132b1152174d0b83e3c1114066392579a45824c5fa17649ab89299ddd4bda54935"
+};
+
+const char *test_vec_G2_field_elems_0_1[5] = {
+    "0x05a2acec64114845711a54199ea339abd125ba38253b70a92c876df10598bd1986b739cad67961eb94f7076511b3b39a",
+    "0x01c8067bf4c0ba709aa8b9abc3d1cef589a4758e09ef53732d670fd8739a7274e111ba2fcaa71b3d33df2a3a0c8529dd",
+    "0x062f84cb21ed89406890c051a0e8b9cf6c575cf6e8e18ecf63ba86826b0ae02548d83b483b79e48512b82a6c0686df8f",
+    "0x034147b77ce337a52e5948f66db0bab47a8d038e712123bb381899b6ab5ad20f02805601e6104c29df18c254b8618c7b",
+    "0x12ab625b0fe0ebd1367fe9fac57bb1168891846039b4216b9d94007b674de2d79126870e88aeef54b2ec717a887dcf39"
+};
+
+const char *test_vec_G2_field_elems_1_0[5] = {
+    "0x02f99798e8a5acdeed60d7e18e9120521ba1f47ec090984662846bc825de191b5b7641148c0dbc237726a334473eee94",
+    "0x187111d5e088b6b9acfdfad078c4dacf72dcd17ca17c82be35e79f8c372a693f60a033b461d81b025864a0ad051a06e4",
+    "0x1739123845406baa7be5c5dc74492051b6d42504de008c635f3535bb831d478a341420e67dcc7b46b2e8cba5379cca97",
+    "0x0930315cae1f9a6017c3f0c8f2314baa130e1cf13f6532bff0a8a1790cd70af918088c3db94bda214e896e1543629795",
+    "0x0e6a42010cf435fb5bacc156a585e1ea3294cc81d0ceb81924d95040298380b164f702275892cedd81b62de3aba3f6b5"
+};
+
+const char *test_vec_G2_field_elems_1_1[5] = {
+    "0x145a81e418d4010cc027a68f14391b30074e89e60ee7a22f87217b2f6eb0c4b94c9115b436e6fa4607e95a98de30a435",
+    "0x08b852331c96ed983e497ebc6dee9b75e373d923b729194af8e72a051ea586f3538a6ebb1e80881a082fa2b24df9f566",
+    "0x01897665d9cb5db16a27657760bbea7951f67ad68f8d55f7113f24ba6ddd82caef240a9bfa627972279974894701d975",
+    "0x10c4df2cacf67ea3cb3108b00d4cbd0b3968031ebc8eac4b1ebcefe84d6b715fde66bef0219951ece29d1facc8a520ef",
+    "0x117d9a0defc57a33ed208428cb84e54c85a6840e7648480ae428838989d25d97a0af8e3255be62b25c2a85630d2dddd8"
 };
 
 bool test_message_expand_xmd(int test_num)
@@ -142,6 +177,49 @@ bool test_hash_to_field_fp(int test_num)
     return ret;
 }
 
+bool test_hash_to_field_fp2(int test_num)
+{
+    printf("Running %s #%d\n", __func__, test_num);
+
+    bool ret;
+    fp2_elem **elems;
+    fp2_elem expect;
+
+    elems = hash_to_field_fp2(test_vec_msg[test_num], G2_TEST_DST, 2);
+
+    fp2_elem_from_str(&expect,
+            test_vec_G2_field_elems_0_0[test_num],
+            test_vec_G2_field_elems_0_1[test_num]);
+
+    ret = fp2_equal(&expect, elems[0]);
+    printf("u[0]\nActual:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, elems[0]->a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, elems[0]->b));
+    printf("Expected:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, expect.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, expect.b));
+    fp2_elem_free(&expect);
+
+    fp2_elem_from_str(&expect,
+            test_vec_G2_field_elems_1_0[test_num],
+            test_vec_G2_field_elems_1_1[test_num]);
+
+    ret = ret && fp2_equal(&expect, elems[1]);
+    printf("u[1]\nActual:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, elems[1]->a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, elems[1]->b));
+    printf("Expected:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, expect.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, expect.b));
+    fp2_elem_free(&expect);
+
+    fp2_elem_free(elems[0]);
+    fp2_elem_free(elems[1]);
+    free(elems);
+
+    return ret;
+}
+
 int main()
 {
     TEST_MAIN_INIT;
@@ -152,6 +230,10 @@ int main()
 
     for (int i = 0; i < 5; i++) {
         TEST_RUN(test_hash_to_field_fp(i));
+    }
+
+    for (int i = 0; i < 5; i++) {
+        TEST_RUN(test_hash_to_field_fp2(i));
     }
 
     TEST_MAIN_RETURN;

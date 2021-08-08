@@ -7,6 +7,7 @@
 #include <openssl/sha.h>
 
 #include "octet_string.h"
+#include "finite_field.h"
 
 #include "BLS12_381.h"
 
@@ -151,6 +152,43 @@ mpz_t *hash_to_field_fp(const char *msg, const char *DST, uint32_t count)
         mpz_init(elems[i]);
         OS2IP(elems[i], tv);
         mpz_mod(elems[i], elems[i], p);
+    }
+
+    octet_string_free(uniform_bytes);
+    octet_string_free(tv);
+    mpz_clear(p);
+
+    return elems;
+}
+
+fp2_elem **hash_to_field_fp2(const char *msg, const char *DST, uint32_t count)
+{
+    fp2_elem **elems;
+    mpz_t p;
+    uint32_t len_in_bytes;
+    octet_string *uniform_bytes, *tv;
+
+    elems = calloc(count, sizeof(fp2_elem*));
+
+    mpz_init_set_str(p, BLS12_381_P, 0);
+
+    len_in_bytes = count * 2 * HTF_PARAM_L;
+    octet_string_alloc(&uniform_bytes, len_in_bytes);
+    octet_string_alloc(&tv, HTF_PARAM_L);
+
+    assert(expand_message_xmd(uniform_bytes, msg, DST, len_in_bytes) == 0);
+
+    for (int i = 0; i < count; i++) {
+        elems[i] = calloc(1, sizeof(fp2_elem));
+        fp2_elem_init(elems[i]);
+
+        octet_substr(tv, uniform_bytes, HTF_PARAM_L * (2 * i), HTF_PARAM_L);
+        OS2IP(elems[i]->a, tv);
+        mpz_mod(elems[i]->a, elems[i]->a, p);
+
+        octet_substr(tv, uniform_bytes, HTF_PARAM_L * (1 + (2 * i)), HTF_PARAM_L);
+        OS2IP(elems[i]->b, tv);
+        mpz_mod(elems[i]->b, elems[i]->b, p);
     }
 
     octet_string_free(uniform_bytes);

@@ -20,6 +20,9 @@ void fp_add(mpz_t x, const mpz_t y, const mpz_t z);
 void fp_sub(mpz_t x, const mpz_t y, const mpz_t z);
 void fp_mul(mpz_t x, const mpz_t y, const mpz_t z);
 void fp_inv(mpz_t x, const mpz_t y);
+void fp_negate(mpz_t x, const mpz_t y);
+void fp_mul_ui(mpz_t, const mpz_t y, unsigned long int z);
+void fp_add_ui(mpz_t, const mpz_t y, unsigned long int z);
 
 void fp2_elem_init(fp2_elem *e);
 void fp2_elem_set(fp2_elem *e1, const fp2_elem *e2);

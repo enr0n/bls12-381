@@ -74,6 +74,24 @@ void fp_inv(mpz_t x, const mpz_t y)
     assert(mpz_invert(x, y, g_BLS12_381_P) != 0);
 }
 
+void fp_negate(mpz_t x, const mpz_t y)
+{
+    mpz_neg(x, y);
+    mpz_mod(x, x, g_BLS12_381_P);
+}
+
+void fp_mul_ui(mpz_t x, const mpz_t y, unsigned long int z)
+{
+    mpz_mul_ui(x, y, z);
+    mpz_mod(x, x, g_BLS12_381_P);
+}
+
+void fp_add_ui(mpz_t x, const mpz_t y, unsigned long int z)
+{
+    mpz_add_ui(x, y, z);
+    mpz_mod(x, x, g_BLS12_381_P);
+}
+
 void fp2_elem_init(fp2_elem *e)
 {
     mpz_inits(e->a, e->b, NULL);

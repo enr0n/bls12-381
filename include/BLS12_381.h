@@ -343,6 +343,15 @@ void G2_mul_scalar(G2_elem_affine *r, const G2_elem_affine *P, const mpz_t m);
 void BLS12_381_pairing(fp12_elem *r, const G2_elem_affine *Q, const G1_elem_affine *P);
 
 /**
+ * Hash-to-curve implementations follow the IETF draft:
+ *   https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-11.txt
+ *
+ * TODO(nr): Expand on background and parameters used in hash-to-curve.
+ */
+#define BLS12_381_ISOGENY_A "0x144698a3b8e9433d693a02c96d4982b0ea985383ee66a8d8e8981aefd881ac98936f8da0e0f97f5cf428082d584c1d"
+#define BLS12_381_ISOGENY_B "0x12e2908d11688030018b12e8753eee3b2016c1f0f24f4070a0b9c14fcef35ef55a23215a316ceaa5d1cc48e98e172be0"
+
+/**
  * Hash the byte string to a point in G_1.
  */
 void BLS12_381_hash_to_G1(G1_elem_affine *P, const uint8_t *bytes);

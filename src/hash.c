@@ -455,3 +455,44 @@ void map_to_curve_G1(G1_elem_affine *P, const mpz_t u)
 
     mpz_clears(x, xn, xd, y, NULL);
 }
+
+void clear_cofactor_G1(G1_elem_affine *P)
+{
+    mpz_t h_eff;
+
+    mpz_init_set_str(h_eff, BLS12_381_G1_H_EFF, 0);
+    G1_mul_scalar(P, P, h_eff);
+    mpz_clear(h_eff);
+}
+
+void BLS12_381_hash_to_G1(G1_elem_affine *P, const uint8_t *bytes, const uint8_t *DST)
+{
+    mpz_t *u;
+    G1_elem_affine Q0, Q1;
+    G1_elem_proj R, Q0_proj, Q1_proj;
+
+    G1_identity_init_affine(&Q0);
+    G1_identity_init_affine(&Q1);
+    G1_identity_init_proj(&R);
+    G1_identity_init_proj(&Q0_proj);
+    G1_identity_init_proj(&Q1_proj);
+
+    u = hash_to_field_fp(bytes, DST, 2);
+
+    map_to_curve_G1(&Q0, u[0]);
+    map_to_curve_G1(&Q1, u[1]);
+
+    G1_affine2proj(&Q0_proj, &Q0);
+    G1_affine2proj(&Q1_proj, &Q1);
+
+    G1_add_proj(&R, &Q0_proj, &Q1_proj);
+
+    G1_proj2affine(P, &R);
+    clear_cofactor_G1(P);
+
+    G1_elem_free_affine(&Q0);
+    G1_elem_free_affine(&Q1);
+    G1_elem_free_proj(&R);
+    G1_elem_free_proj(&Q0_proj);
+    G1_elem_free_proj(&Q1_proj);
+}

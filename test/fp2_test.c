@@ -79,6 +79,84 @@ int test_fp2_inv(const fp2_elem *e1)
     );
 }
 
+int test_fp2_pow(const fp2_elem *e1)
+{
+    int res;
+    fp2_elem expect, actual;
+    mpz_t exp;
+
+    fp2_elem_init(&actual);
+    fp2_elem_init(&expect);
+    mpz_init(exp);
+
+    // expect = e1^6
+    fp2_square(&expect, e1);
+    fp2_mul(&expect, &expect, e1);
+    fp2_square(&expect, &expect);
+
+    mpz_set_ui(exp, 6);
+    fp2_pow(&actual, e1, exp);
+
+    printf("Actual:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, actual.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, actual.b));
+    printf("Expected:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, expect.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, expect.b));
+    res = fp2_equal(&actual, &expect);
+
+    // expect = e1^-6
+    fp2_inv(&expect, &expect);
+
+    mpz_set_si(exp, -6);
+    fp2_pow(&actual, e1, exp);
+
+
+    printf("Actual:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, actual.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, actual.b));
+    printf("Expected:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, expect.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, expect.b));
+    res = res && fp2_equal(&actual, &expect);
+
+    // expect = e1^5
+    fp2_square(&expect, e1);
+    fp2_square(&expect, &expect);
+    fp2_mul(&expect, &expect, e1);
+
+    mpz_set_ui(exp, 5);
+    fp2_pow(&actual, e1, exp);
+
+    printf("Actual:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, actual.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, actual.b));
+    printf("Expected:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, expect.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, expect.b));
+    res = fp2_equal(&actual, &expect);
+
+    // expect = e1^-5
+    fp2_inv(&expect, &expect);
+
+    mpz_set_si(exp, -5);
+    fp2_pow(&actual, e1, exp);
+
+    printf("Actual:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, actual.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, actual.b));
+    printf("Expected:\n");
+    printf("\ta: %s\n", mpz_get_str(NULL, 16, expect.a));
+    printf("\tb: %s\n", mpz_get_str(NULL, 16, expect.b));
+    res = res && fp2_equal(&actual, &expect);
+
+    fp2_elem_free(&actual);
+    fp2_elem_free(&expect);
+    mpz_clear(exp);
+
+    return res;
+}
+
 int main()
 {
     int result, pass_count, fail_count;
@@ -122,6 +200,16 @@ int main()
 
     printf("Running test_fp2_inv...\n");
     result = test_fp2_inv(&e1);
+    if (!result) {
+        printf("FAIL\n\n");
+        fail_count++;
+    } else {
+        printf("PASS\n\n");
+        pass_count++;
+    }
+
+    printf("Running test_fp2_pow...\n");
+    result = test_fp2_pow(&e1);
     if (!result) {
         printf("FAIL\n\n");
         fail_count++;

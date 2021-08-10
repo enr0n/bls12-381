@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <stdio.h>
-
 #include <gmp.h>
 #include <openssl/sha.h>
 
@@ -228,6 +226,13 @@ static int sgn0_fp2(const fp2_elem *x)
         mpz_set(x, b); \
     }
 
+#define CMOV2(x,a,b,c)      \
+    if (!c) {               \
+        fp2_elem_set(x, a); \
+    } else {                \
+        fp2_elem_set(x, b); \
+    }
+
 /**
  * Implementation of the simplified SWU method, specifically for curves
  * where order of the finite field is equivalent to 3 mod 4. This is the
@@ -298,6 +303,173 @@ void map_to_curve_simple_swu_3mod4(mpz_t xn, mpz_t xd, mpz_t y, const mpz_t u)
                tv1, tv2, tv3, tv4,
                x1n, x2n, gxd, gx1,
                y1, y2, tmp, NULL);
+}
+
+/**
+ * Implementation of the simplified SWU method, specifically for curves
+ * where order of the finite field is equivalent to 9 mod 16. This is the
+ * case for the curve E'/F_p^2 which is isogenoes to E: y^2 = x^3 + 4(u + 1).
+ * This is required for G2 hashing.
+ *
+ * https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-11#appendix-G.2.2
+ */
+#define SWU_9MOD16_C1 "0x2a437a4b8c35fc74bd278eaa22f25e9e2dc90e50e7046b466e59e4"\
+                      "9349e8bd050a62cfd16ddca6ef53149330978ef011d68619c86185c7"\
+                      "b292e85a87091a04966bf91ed3e71b743162c338362113cfd7ced6b1"\
+                      "d76382eab26aa00001c718e3"
+
+#define SWU_9MOD16_C2_A "0"
+#define SWU_9MOD16_C2_B "1"
+
+#define SWU_9MOD16_C3_A "0x135203e60180a68ee2e9c448d77a2cd91c3dedd930b1cf60ef396"\
+                        "489f61eb45e304466cf3e67fa0af1ee7b04121bdea2"
+#define SWU_9MOD16_C3_B "0x06af0e0437ff400b6831e36d6bd17ffe48395dabc2d3435e77f76"\
+                        "e17009241c5ee67992f72ec05f4c81084fbede3cc09"
+
+#define SWU_9MOD16_C4_A "0x0699be3b8c6870965e5bf892ad5d2cc7b0e85a117402dfd83b7f4"\
+                        "a947e02d978498255a2aaec0ac627b5afbdf1bf1c90"
+#define SWU_9MOD16_C4_B "0x08157cd83046453f5dd0972b6e3949e4288020b5b8a9cc99ca07e"\
+                        "27089a2ce2436d965026adad3ef7baba37f2183e9b5"
+
+#define SWU_9MOD16_C5_A "0x0f5d0d63d2797471e6d39f306cc0dc0ab85de3bd9f39ce46f3649"\
+                        "ac0de9e844417cc8de88716c1fd323fa68040801aea"
+#define SWU_9MOD16_C5_B "0x0ab1c2ffdd6c253ca155231eb3e71ba044fd562f6f72bc5bad5ec"\
+                        "46a0b7a3b0247cf08ce6c6317f40edbc653a72dee17"
+
+void map_to_curve_simple_swu_9mod16(fp2_elem *xn, fp2_elem *xd, fp2_elem *y, const fp2_elem *u)
+{
+    fp2_elem tv1, tv2, tv3, tv4, tv5,
+             x1n, gxd, gx1, gx2,
+             c2, c3, c4, c5,
+             Z, A, B, tmp;
+    mpz_t c1;
+    int e;
+
+    fp2_elem_init(&tv1);
+    fp2_elem_init(&tv2);
+    fp2_elem_init(&tv3);
+    fp2_elem_init(&tv4);
+    fp2_elem_init(&tv5);
+    fp2_elem_init(&x1n);
+    fp2_elem_init(&gxd);
+    fp2_elem_init(&gx1);
+    fp2_elem_init(&gx2);
+    fp2_elem_init(&Z);
+    fp2_elem_init(&tmp);
+
+    // Z  = -(2 + I)
+    fp2_elem_set_si(&Z, -2, -1);
+
+    mpz_init_set_str(c1, SWU_9MOD16_C1, 0);
+    fp2_elem_from_str(&c2, SWU_9MOD16_C2_A, SWU_9MOD16_C2_B);
+    fp2_elem_from_str(&c3, SWU_9MOD16_C3_A, SWU_9MOD16_C3_B);
+    fp2_elem_from_str(&c4, SWU_9MOD16_C4_A, SWU_9MOD16_C4_B);
+    fp2_elem_from_str(&c5, SWU_9MOD16_C5_A, SWU_9MOD16_C5_B);
+
+    fp2_elem_from_str(&A,
+            BLS12_381_TWIST_ISOGENY_A_X,
+            BLS12_381_TWIST_ISOGENY_A_Y
+    );
+
+    fp2_elem_from_str(&B,
+            BLS12_381_TWIST_ISOGENY_B_X,
+            BLS12_381_TWIST_ISOGENY_B_Y
+    );
+
+    fp2_square(&tv1, u);             // 1.  tv1 = u^2
+    fp2_mul(&tv3, &Z, &tv1);         // 2.  tv3 = Z * tv1
+    fp2_square(&tv5, &tv3);          // 3.  tv5 = tv3^2
+    fp2_add(xd, &tv5, &tv3);         // 4.   xd = tv5 + tv3
+    fp2_elem_set_si(&tmp, 1, 0);     // 5.  x1n = xd + 1
+    fp2_add(&x1n, xd, &tmp);
+    fp2_mul(&x1n, &x1n, &B);         // 6.  x1n = x1n * B
+    fp2_mul(xd, &A, xd);             // 7.   xd = -A * xd
+    fp2_negate(xd, xd);
+    fp2_elem_set_si(&tmp, 0, 0);     // 8.   e1 = xd == 0
+    e = fp2_equal(xd, &tmp);
+    fp2_mul(&tmp, &Z, &A);           // 9.   xd = CMOV(xd, Z * A, e1)   # If xd == 0, set xd = Z * A
+    CMOV2(xd, xd, &tmp, e);
+    fp2_square(&tv2, xd);            // 10. tv2 = xd^2
+    fp2_mul(&gxd, &tv2, xd);         // 11. gxd = tv2 * xd              # gxd == xd^3
+    fp2_mul(&tv2, &A, &tv2);         // 12. tv2 = A * tv2
+    fp2_square(&gx1, &x1n);          // 13. gx1 = x1n^2
+    fp2_add(&gx1, &gx1, &tv2);       // 14. gx1 = gx1 + tv2             # x1n^2 + A * xd^2
+    fp2_mul(&gx1, &gx1, &x1n);       // 15. gx1 = gx1 * x1n             # x1n^3 + A * x1n * xd^2
+    fp2_mul(&tv2, &B, &gxd);         // 16. tv2 = B * gxd
+    fp2_add(&gx1, &gx1, &tv2);       // 17. gx1 = gx1 + tv2             # x1n^3 + A * x1n * xd^2 + B * xd^3
+    fp2_square(&tv4, &gxd);          // 18. tv4 = gxd^2
+    fp2_mul(&tv2, &tv4, &gxd);       // 19. tv2 = tv4 * gxd             # gxd^3
+    fp2_square(&tv4, &tv4);          // 20. tv4 = tv4^2                 # gxd^4
+    fp2_mul(&tv2, &tv2, &tv4);       // 21. tv2 = tv2 * tv4             # gxd^7
+    fp2_mul(&tv2, &tv2, &gx1);       // 22. tv2 = tv2 * gx1             # gx1 * gxd^7
+    fp2_square(&tv4, &tv4);          // 23. tv4 = tv4^2                 # gxd^8
+    fp2_mul(&tv4, &tv2, &tv4);       // 24. tv4 = tv2 * tv4             # gx1 * gxd^15
+    fp2_pow(y, &tv4, c1);            // 25.   y = tv4^c1                # (gx1 * gxd^15)^((q - 9) / 16)
+    fp2_mul(y, y, &tv2);             // 26.   y = y * tv2               # This is almost sqrt(gx1)
+    fp2_mul(&tv4, y, &c2);           // 27. tv4 = y * c2                # check the four possible sqrts
+    fp2_square(&tv2, &tv4);          // 28. tv2 = tv4^2
+    fp2_mul(&tv2, &tv2, &gxd);       // 29. tv2 = tv2 * gxd
+    e = fp2_equal(&tv2, &gx1);       // 30.  e2 = tv2 == gx1
+    CMOV2(y, y, &tv4, e);            // 31.   y = CMOV(y, tv4, e2)
+    fp2_mul(&tv4, y, &c3);           // 32. tv4 = y * c3
+    fp2_square(&tv2, &tv4);          // 33. tv2 = tv4^2
+    fp2_mul(&tv2, &tv2, &gxd);       // 34. tv2 = tv2 * gxd
+    e = fp2_equal(&tv2, &gx1);       // 35.  e3 = tv2 == gx1
+    CMOV2(y, y, &tv4, e);            // 36.   y = CMOV(y, tv4, e3)
+    fp2_mul(&tv4, &tv4, &c2);        // 37. tv4 = tv4 * c2
+    fp2_square(&tv2, &tv4);          // 38. tv2 = tv4^2
+    fp2_mul(&tv2, &tv2, &gxd);       // 39. tv2 = tv2 * gxd
+    e = fp2_equal(&tv2, &gx1);       // 40.  e4 = tv2 == gx1
+    CMOV2(y, y, &tv4, e);            // 41.   y = CMOV(y, tv4, e4)      # if x1 is square, this is its sqrt
+    fp2_mul(&gx2, &gx1, &tv5);       // 42. gx2 = gx1 * tv5
+    fp2_mul(&gx2, &gx2, &tv3);       // 43. gx2 = gx2 * tv3             # gx2 = gx1 * Z^3 * u^6
+    fp2_mul(&tv5, y, &tv1);          // 44. tv5 = y * tv1
+    fp2_mul(&tv5, &tv5, u);          // 45. tv5 = tv5 * u               # This is almost sqrt(gx2)
+    fp2_mul(&tv1, &tv5, &c4);        // 46. tv1 = tv5 * c4              # check the four possible sqrts
+    fp2_mul(&tv4, &tv1, &c2);        // 47. tv4 = tv1 * c2
+    fp2_square(&tv2, &tv4);          // 48. tv2 = tv4^2
+    fp2_mul(&tv2, &tv2, &gxd);       // 49. tv2 = tv2 * gxd
+    e = fp2_equal(&tv2, &gx2);       // 50.  e5 = tv2 == gx2
+    CMOV2(&tv1, &tv1, &tv4, e);      // 51. tv1 = CMOV(tv1, tv4, e5)
+    fp2_mul(&tv4, &tv5, &c5);        // 52. tv4 = tv5 * c5
+    fp2_square(&tv2, &tv4);          // 53. tv2 = tv4^2
+    fp2_mul(&tv2, &tv2, &gxd);       // 54. tv2 = tv2 * gxd
+    e = fp2_equal(&tv2, &gx2);       // 55.  e6 = tv2 == gx2
+    CMOV2(&tv1, &tv1, &tv4, e);      // 56. tv1 = CMOV(tv1, tv4, e6)
+    fp2_mul(&tv4, &tv4, &c2);        // 57. tv4 = tv4 * c2
+    fp2_square(&tv2, &tv4);          // 58. tv2 = tv4^2
+    fp2_mul(&tv2, &tv2, &gxd);       // 59. tv2 = tv2 * gxd
+    e = fp2_equal(&tv2, &gx2);       // 60.  e7 = tv2 == gx2
+    CMOV2(&tv1, &tv1, &tv4, e);      // 61. tv1 = CMOV(tv1, tv4, e7)
+    fp2_square(&tv2, y);             // 62. tv2 = y^2
+    fp2_mul(&tv2, &tv2, &gxd);       // 63. tv2 = tv2 * gxd
+    e = fp2_equal(&tv2, &gx1);       // 64.  e8 = tv2 == gx1
+    CMOV2(y, &tv1, y, e);            // 65.   y = CMOV(tv1, y, e8)      # choose correct y-coordinate
+    fp2_mul(&tv2, &tv3, &x1n);       // 66. tv2 = tv3 * x1n             # x2n = x2n / xd = Z * u^2 * x1n / xd
+    CMOV2(xn, &tv2, &x1n, e);        // 67.  xn = CMOV(tv2, x1n, e8)    # choose correct x-coordinate
+    e = sgn0_fp2(u) == sgn0_fp2(y);  // 68.  e9 = sgn0(u) == sgn0(y)    # Fix sign of y
+    fp2_negate(&tmp, y);             // 69.   y = CMOV(-y, y, e9)
+    CMOV2(y, &tmp, y, e);
+                                     // 70. return (xn, xd, y, 1)
+
+    fp2_elem_free(&tv1);
+    fp2_elem_free(&tv2);
+    fp2_elem_free(&tv3);
+    fp2_elem_free(&tv4);
+    fp2_elem_free(&tv5);
+    fp2_elem_free(&x1n);
+    fp2_elem_free(&gxd);
+    fp2_elem_free(&gx1);
+    fp2_elem_free(&gx2);
+    fp2_elem_free(&Z);
+    fp2_elem_free(&tmp);
+    fp2_elem_free(&c2);
+    fp2_elem_free(&c3);
+    fp2_elem_free(&c4);
+    fp2_elem_free(&c5);
+    fp2_elem_free(&A);
+    fp2_elem_free(&B);
+    mpz_clear(c1);
 }
 
 /**

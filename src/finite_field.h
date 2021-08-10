@@ -38,6 +38,7 @@ void fp2_sub(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
 void fp2_mul(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
 void fp2_square(fp2_elem *x, const fp2_elem *y);
 void fp2_inv(fp2_elem *x, const fp2_elem *y);
+void fp2_pow(fp2_elem *x, const fp2_elem *y, const mpz_t exp);
 void fp2_negate(fp2_elem *x, const fp2_elem *y);
 void fp2_conjugate(fp2_elem *x, const fp2_elem *y);
 void fp2_mul_nonresidue(fp2_elem *x, const fp2_elem *y);

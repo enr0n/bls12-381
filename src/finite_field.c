@@ -219,6 +219,68 @@ void fp2_inv(fp2_elem *x, const fp2_elem *y)
     mpz_clears(v, w, exp, ra, rb, NULL);
 }
 
+void fp2_pow(fp2_elem *x, const fp2_elem *y, const mpz_t exp)
+{
+    fp2_elem r;
+    mpz_t e;
+    mp_bitcnt_t L;
+    int sign;
+
+    if (mpz_cmp_si(exp, 0) == 0) {
+        fp2_elem_set_si(x, 1, 0);
+        return;
+    }
+
+    if (mpz_cmp_si(exp, 1) == 0) {
+        fp2_elem_set(x, y);
+        return;
+    }
+
+    if (mpz_cmp_si(exp, 2) == 0) {
+        fp2_square(x, y);
+        return;
+    }
+
+    fp2_elem_init(&r);
+    mpz_init_set(e, exp);
+
+    fp2_elem_set(&r, y);
+
+    /**
+     * We always need a positive integer representation
+     * to use the GMP bit fiddling functions. If the exp
+     * is negative, that just means the binary representation
+     * looks like:
+     *     exp = -2^n0 - 2^n2 ... -2^nL-1
+     * which means that at the end of the loop, we just take
+     * the inverse of the result.
+     */
+    if ((sign = mpz_sgn(e)) < 0) {
+        mpz_neg(e, e);
+    }
+
+    L = (mp_bitcnt_t)mpz_sizeinbase(e, 2) - 2;
+    for (;;) {
+        fp2_square(&r, &r);
+
+        if (mpz_tstbit(e, L)) {
+            fp2_mul(&r, &r, y);
+        }
+
+        if (!L) break;
+        L--;
+    }
+
+    if (sign < 0) {
+        fp2_inv(&r, &r);
+    }
+
+    fp2_elem_set(x, &r);
+
+    fp2_elem_free(&r);
+    mpz_clear(e);
+}
+
 void fp2_negate(fp2_elem *x, const fp2_elem *y)
 {
     mpz_neg(x->a, y->a);

@@ -10,6 +10,8 @@
 
 #include "hash.h"
 
+#include "BLS12_381.h"
+
 #define TEST_MAIN_INIT                  \
     int result, pass_count, fail_count; \
                                         \
@@ -122,6 +124,38 @@ const char *test_vec_G2_field_elems_1_1[5] = {
     "0x117d9a0defc57a33ed208428cb84e54c85a6840e7648480ae428838989d25d97a0af8e3255be62b25c2a85630d2dddd8"
 };
 
+const char *test_vec_G1_mapped_points_0_x[5] = {
+    "0x11a3cce7e1d90975990066b2f2643b9540fa40d6137780df4e753a8054d07580db3b7f1f03396333d4a359d1fe3766fe",
+    "0x125435adce8e1cbd1c803e7123f45392dc6e326d292499c2c45c5865985fd74fe8f042ecdeeec5ecac80680d04317d80",
+    "0x08834484878c217682f6d09a4b51444802fdba3d7f2df9903a0ddadb92130ebbfa807fffa0eabf257d7b48272410afff",
+    "0x0cbd7f84ad2c99643fea7a7ac8f52d63d66cefa06d9a56148e58b984b3dd25e1f41ff47154543343949c64f88d48a710",
+    "0x0cf97e6dbd0947857f3e578231d07b309c622ade08f2c08b32ff372bd90db19467b2563cc997d4407968d4ac80e154f8"
+};
+
+const char *test_vec_G1_mapped_points_0_y[5] = {
+    "0x0eeaf6d794e479e270da10fdaf768db4c96b650a74518fc67b04b03927754bac66f3ac720404f339ecdcc028afa091b7",
+    "0x0e8828948c989126595ee30e4f7c931cbd6f4570735624fd25aef2fa41d3f79cfb4b4ee7b7e55a8ce013af2a5ba20bf2",
+    "0x0b318f7ecf77f45a0f038e62d7098221d2dbbca2a394164e2e3fe953dc714ac2cde412d8f2d7f0c03b259e6795a2508e",
+    "0x052c00e4ed52d000d94881a5638ae9274d3efc8bc77bc0e5c650de04a000b2c334a9e80b85282a00f3148dfdface0865",
+    "0x127f0cddf2613058101a5701f4cb9d0861fd6c2a1b8e0afe194fccf586a3201a53874a2761a9ab6d7220c68661a35ab3"
+};
+
+const char *test_vec_G1_mapped_points_1_x[5] = {
+    "0x160003aaf1632b13396dbad518effa00fff532f604de1a7fc2082ff4cb0afa2d63b2c32da1bef2bf6c5ca62dc6b72f9c",
+    "0x11def93719829ecda3b46aa8c31fc3ac9c34b428982b898369608e4f042babee6c77ab9218aad5c87ba785481eff8ae4",
+    "0x158418ed6b27e2549f05531a8281b5822b31c3bf3144277fbb977f8d6e2694fedceb7011b3c2b192f23e2a44b2bd106e",
+    "0x06493fb68f0d513af08be0372f849436a787e7b701ae31cb964d968021d6ba6bd7d26a38aaa5a68e8c21a6b17dc8b579",
+    "0x092f1acfa62b05f95884c6791fba989bbe58044ee6355d100973bf9553ade52b47929264e6ae770fb264582d8dce512a"
+};
+
+const char *test_vec_G1_mapped_points_1_y[5] = {
+    "0x0d8bb2d14e20cf9f6036152ed386d79189415b6d015a20133acb4e019139b94e9c146aaad5817f866c95d609a361735e",
+    "0x0007c9cef122ccf2efd233d6eb9bfc680aa276652b0661f4f820a653cec1db7ff69899f8e52b8e92b025a12c822a6ce6",
+    "0x1879074f344471fac5f839e2b4920789643c075792bec5af4282c73f7941cda5aa77b00085eb10e206171b9787c4169f",
+    "0x02e98f2ccf5802b05ffaac7c20018bc0c0b2fd580216c4aa2275d2909dc0c92d0d0bdc979226adeb57a29933536b6bb4",
+    "0x028e6d0169a72cfedb737be45db6c401d3adfb12c58c619c82b93a5dfcccef12290de530b0480575ddc8397cda0bbebf"
+};
+
 bool test_message_expand_xmd(int test_num)
 {
     printf("Running %s #%d\n", __func__, test_num);
@@ -220,9 +254,60 @@ bool test_hash_to_field_fp2(int test_num)
     return ret;
 }
 
+bool test_map_to_curve_G1(int test_num)
+{
+    printf("Running %s #%d\n", __func__, test_num);
+
+    bool ret;
+    mpz_t u;
+    G1_elem_affine actual, expect;
+
+    mpz_init(u);
+    G1_identity_init_affine(&actual);
+
+    mpz_set_str(u, test_vec_G1_field_elems_0[test_num], 0);
+    G1_elem_affine_from_str(&expect,
+                           test_vec_G1_mapped_points_0_x[test_num],
+                           test_vec_G1_mapped_points_0_y[test_num]);
+
+    map_to_curve_G1(&actual, u);
+
+    ret = G1_equiv_affine(&actual, &expect);
+    printf("Actual:\n");
+    printf("\tx: %s\n", mpz_get_str(NULL, 16, actual.x));
+    printf("\ty: %s\n", mpz_get_str(NULL, 16, actual.y));
+    printf("Expected:\n");
+    printf("\tx: %s\n", mpz_get_str(NULL, 16, expect.x));
+    printf("\ty: %s\n", mpz_get_str(NULL, 16, expect.y));
+    G1_elem_free_affine(&expect);
+
+    mpz_set_str(u, test_vec_G1_field_elems_1[test_num], 0);
+    G1_elem_affine_from_str(&expect,
+                           test_vec_G1_mapped_points_1_x[test_num],
+                           test_vec_G1_mapped_points_1_y[test_num]);
+
+    map_to_curve_G1(&actual, u);
+
+    ret = ret && G1_equiv_affine(&actual, &expect);
+    printf("Actual:\n");
+    printf("\tx: %s\n", mpz_get_str(NULL, 16, actual.x));
+    printf("\ty: %s\n", mpz_get_str(NULL, 16, actual.y));
+    printf("Expected:\n");
+    printf("\tx: %s\n", mpz_get_str(NULL, 16, expect.x));
+    printf("\ty: %s\n", mpz_get_str(NULL, 16, expect.y));
+    G1_elem_free_affine(&expect);
+
+    G1_elem_free_affine(&actual);
+    mpz_clear(u);
+
+    return ret;
+}
+
 int main()
 {
     TEST_MAIN_INIT;
+
+    fp_params_init();
 
     for (int i = 0; i < 10; i++) {
         TEST_RUN(test_message_expand_xmd(i));
@@ -235,6 +320,12 @@ int main()
     for (int i = 0; i < 5; i++) {
         TEST_RUN(test_hash_to_field_fp2(i));
     }
+
+    for (int i = 0; i < 5; i++) {
+        TEST_RUN(test_map_to_curve_G1(i));
+    }
+
+    fp_params_free();
 
     TEST_MAIN_RETURN;
 }

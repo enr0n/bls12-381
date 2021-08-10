@@ -433,3 +433,25 @@ void iso_map_G1(mpz_t x, mpz_t y, const mpz_t x_prime, const mpz_t y_prime)
 
     mpz_clears(xn, xd, yn, yd, tmp, p, k, NULL);
 }
+
+/**
+ * TODO(nr): It may be more convenient to leave things in
+ *           projective coordinates, but let's get things
+ *           working for now.
+ */
+void map_to_curve_G1(G1_elem_affine *P, const mpz_t u)
+{
+    mpz_t x, xn, xd, y;
+
+    mpz_inits(x, xn, xd, y, NULL);
+
+    map_to_curve_simple_swu_3mod4(xn, xd, y, u);
+
+    fp_inv(x, xd);
+    fp_mul(x, x, xn);
+
+    iso_map_G1(P->x, P->y, x, y);
+    P->infinity = false;
+
+    mpz_clears(x, xn, xd, y, NULL);
+}

@@ -34,4 +34,4 @@ test-pairing:
 
 test-hash:
 	mkdir -p tmp
-	gcc -o tmp/test-hash -I../include -I../src hash_test.c ../src/octet_string.c ../src/hash.c ../src/finite_field.c ../src/G1.c -lcrypto -lssl -lgmp
+	gcc -o tmp/test-hash -I../include -I../src hash_test.c ../src/*.c -lcrypto -lssl -lgmp

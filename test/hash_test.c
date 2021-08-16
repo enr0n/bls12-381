@@ -156,6 +156,71 @@ const char *test_vec_G1_mapped_points_1_y[5] = {
     "0x028e6d0169a72cfedb737be45db6c401d3adfb12c58c619c82b93a5dfcccef12290de530b0480575ddc8397cda0bbebf"
 };
 
+const char *test_vec_G2_mapped_points_0_0_x[5] = {
+    "0x019ad3fc9c72425a998d7ab1ea0e646a1f6093444fc6965f1cad5a3195a7b1e099c050d57f45e3fa191cc6d75ed7458c",
+    "0x12b2e525281b5f4d2276954e84ac4f42cf4e13b6ac4228624e17760faf94ce5706d53f0ca1952f1c5ef75239aeed55ad",
+    "0x0f48f1ea1318ddb713697708f7327781fb39718971d72a9245b9731faaca4dbaa7cca433d6c434a820c28b18e20ea208",
+    "0x09eccbc53df677f0e5814e3f86e41e146422834854a224bf5a83a50e4cc0a77bfc56718e8166ad180f53526ea9194b57",
+    "0x17cadf8d04a1a170f8347d42856526a24cc466cb2ddfd506cff01191666b7f944e31244d662c904de5440516a2b09004"
+};
+
+const char *test_vec_G2_mapped_points_0_0_y[5] = {
+    "0x171c88b0b0efb5eb2b88913a9e74fe111a4f68867b59db252ce5868af4d1254bfab77ebde5d61cd1a86fb2fe4a5a1c1d",
+    "0x05d8a724db78e570e34100c0bc4a5fa84ad5839359b40398151f37cff5a51de945c563463c9efbdda569850ee5a53e77",
+    "0x06051467c8f85da5ba2540974758f7a1e0239a5981de441fdd87680a995649c211054869c50edbac1f3a86c561ba3162",
+    "0x0c3633943f91daee715277bd644fba585168a72f96ded64fc5a384cce4ec884a4c3c30f08e09cd2129335dc8f67840ec",
+    "0x0d13ba91f2a8b0051cf3279ea0ee63a9f19bc9cb8bfcc7d78b3cbd8cc4fc43ba726774b28038213acf2b0095391c523e"
+};
+
+const char *test_vec_G2_mapped_points_0_1_x[5] = {
+    "0x0ba10604e62bdd9eeeb4156652066167b72c8d743b050fb4c1016c31b505129374f76e03fa127d6a156213576910fef3",
+    "0x02eacdc556d0bdb5d18d22f23dcb086dd106cad713777c7e6407943edbe0b3d1efe391eedf11e977fac55f9b94f2489c",
+    "0x168b3d6df80069dbbedb714d41b32961ad064c227355e1ce5fac8e105de5e49d77f0c64867f3834848f152497eb76333",
+    "0x0eb6186a0457d5b12d132902d4468bfeb7315d83320b6c32f1c875f344efcba979952b4aa418589cb01af712f98cc555",
+    "0x17ef19497d6d9246fa94d35575c0f8d06ee02f21a284dbeaa78768cb1e25abd564e3381de87bda26acd04f41181610c5"
+
+};
+
+const char *test_vec_G2_mapped_points_0_1_y[5] = {
+    "0x0eb22c7a543d3d376e9716a49b72e79a89c9bfe9feee8533ed931cbb5373dde1fbcd7411d8052e02693654f71e15410a",
+    "0x04bbe48bfd5814648d0b9e30f0717b34015d45a861425fabc1ee06fdfce36384ae2c808185e693ae97dcde118f34de41",
+    "0x134e0e8331cee8cb12f9c2d0742714ed9eee78a84d634c9a95f6a7391b37125ed48bfc6e90bf3546e99930ff67cc97bc",
+    "0x119e3cf167e69eb16c1c7830e8df88856d48be12e3ff0a40791a5cd2f7221311d4bf13b1847f371f467357b3f3c0b4c7",
+    "0x12c3c913ba4ed03c24f0721a81a6be7430f2971ffca8fd1729aafe496bb725807531b44b34b59b3ae5495e5a2dcbd5c8"
+};
+
+const char *test_vec_G2_mapped_points_1_0_x[5] = {
+    "0x113d2b9cd4bd98aee53470b27abc658d91b47a78a51584f3d4b950677cfb8a3e99c24222c406128c91296ef6b45608be",
+    "0x19f18cc5ec0c2f055e47c802acc3b0e40c337256a208001dde14b25afced146f37ea3d3ce16834c78175b3ed61f3c537",
+    "0x004fd03968cd1c99a0dd84551f44c206c84dcbdb78076c5bfee24e89a92c8508b52b88b68a92258403cbe1ea2da3495f",
+    "0x0eb3aabc1ddfce17ff18455fcc7167d15ce6b60ddc9eb9b59f8d40ab49420d35558686293d046fc1e42f864b7f60e381",
+    "0x16ec57b7fe04c71dfe34fb5ad84dbce5a2dbbd6ee085f1d8cd17f45e8868976fc3c51ad9eeda682c7869024d24579bfd"
+};
+
+const char *test_vec_G2_mapped_points_1_0_y[5] = {
+    "0x13855912321c5cb793e9d1e88f6f8d342d49c0b0dbac613ee9e17e3c0b3c97dfbb5a49cc3fb45102fdbaf65e0efe2632",
+    "0x15b0dadc256a258b4c68ea43605dffa6d312eef215c19e6474b3e101d33b661dfee43b51abbf96fee68fc6043ac56a58",
+    "0x1674338ea298281b636b2eb0fe593008d03171195fd6dcd4531e8a1ed1f02a72da238a17a635de307d7d24aa2d969a47",
+    "0x198bdfb19d7441ebcca61e8ff774b29d17da16547d2c10c273227a635cacea3f16826322ae85717630f0867539b5ed8b",
+    "0x13103f7aace1ae1420d208a537f7d3a9679c287208026e4e3439ab8cd534c12856284d95e27f5e1f33eec2ce656533b0"
+};
+
+const char *test_vec_G2_mapped_points_1_1_x[5] = {
+    "0x0fd3def0b7574a1d801be44fde617162aa2e89da47f464317d9bb5abc3a7071763ce74180883ad7ad9a723a9afafcdca",
+    "0x05e47c1781286e61c7ade887512bd9c2cb9f640d3be9cf87ea0bad24bd0ebfe946497b48a581ab6c7d4ca74b5147287f",
+    "0x0dc7fa13fff6b12558419e0a1e94bfc3cfaf67238009991c5f24ee94b632c3d09e27eca329989aee348a67b50d5e236c",
+    "0x0aaf1dee3adf3ed4c80e481c09b57ea4c705e1b8d25b897f0ceeec3990748716575f92abff22a1c8f4582aff7b872d52",
+    "0x0958b2c4c2c10fcef5a6c59b9e92c4a67b0fae3e2e0f1b6b5edad9c940b8f3524ba9ebbc3f2ceb3cfe377655b3163bd7"
+};
+
+const char *test_vec_G2_mapped_points_1_1_y[5] = {
+    "0x056f617902b3c0d0f78a9a8cbda43a26b65f602f8786540b9469b060db7b38417915b413ca65f875c130bebfaa59790c",
+    "0x19f98db2f4a1fcdf56a9ced7b320ea9deecf57c8e59236b0dc21f6ee7229aa9705ce9ac7fe7a31c72edca0d92370c096",
+    "0x169585e164c131103d85324f2d7747b23b91d66ae5d947c449c8194a347969fc6bbd967729768da485ba71868df8aed2",
+    "0x0d058d9061ed27d4259848a06c96c5ca68921a5d269b078650c882cb3c2bd424a8702b7a6ee4e0ead9982baf6843e924",
+    "0x0ccb594ed8bd14ca64ed9cb4e0aba221be540f25dd0d6ba15a4a4be5d67bcf35df7853b2d8dad3ba245f1ea3697f66aa"
+};
+
 const char *test_vec_G1_hash_out_x[5] = {
     "0x052926add2207b76ca4fa57a8734416c8dc95e24501772c814278700eed6d1e4e8cf62d9c09db0fac349612b759e79a1",
     "0x03567bc5ef9c690c2ab2ecdf6a96ef1c139cc0b2f284dca0a9a7943388a49a3aee664ba5379a7655d3c68900be2f6903",
@@ -319,6 +384,71 @@ bool test_map_to_curve_G1(int test_num)
     return ret;
 }
 
+bool test_map_to_curve_G2(int test_num)
+{
+    printf("Running %s #%d\n", __func__, test_num);
+
+    bool ret;
+    fp2_elem u;
+    G2_elem_affine actual, expect;
+
+    fp2_elem_init(&u);
+    G2_identity_init_affine(&actual);
+
+    fp2_elem_set_str(&u,
+            test_vec_G2_field_elems_0_0[test_num],
+            test_vec_G2_field_elems_0_1[test_num]);
+    G2_elem_affine_from_str(&expect,
+            test_vec_G2_mapped_points_0_0_x[test_num],
+            test_vec_G2_mapped_points_0_0_y[test_num],
+            test_vec_G2_mapped_points_0_1_x[test_num],
+            test_vec_G2_mapped_points_0_1_y[test_num]);
+
+    map_to_curve_G2(&actual, &u);
+
+    ret = G2_equiv_affine(&actual, &expect);
+    printf("Actual:\n");
+    printf("\tx0: %s\n", mpz_get_str(NULL, 16, actual.x->a));
+    printf("\tx1: %s\n", mpz_get_str(NULL, 16, actual.x->b));
+    printf("\ty0: %s\n", mpz_get_str(NULL, 16, actual.y->a));
+    printf("\ty1: %s\n", mpz_get_str(NULL, 16, actual.y->b));
+    printf("Expected:\n");
+    printf("\tx0: %s\n", mpz_get_str(NULL, 16, expect.x->a));
+    printf("\tx1: %s\n", mpz_get_str(NULL, 16, expect.x->b));
+    printf("\ty0: %s\n", mpz_get_str(NULL, 16, expect.y->a));
+    printf("\ty1: %s\n", mpz_get_str(NULL, 16, expect.y->b));
+    G2_elem_free_affine(&expect);
+
+    fp2_elem_set_str(&u,
+            test_vec_G2_field_elems_1_0[test_num],
+            test_vec_G2_field_elems_1_1[test_num]);
+    G2_elem_affine_from_str(&expect,
+            test_vec_G2_mapped_points_1_0_x[test_num],
+            test_vec_G2_mapped_points_1_0_y[test_num],
+            test_vec_G2_mapped_points_1_1_x[test_num],
+            test_vec_G2_mapped_points_1_1_y[test_num]);
+
+    map_to_curve_G2(&actual, &u);
+
+    ret = ret && G2_equiv_affine(&actual, &expect);
+    printf("Actual:\n");
+    printf("\tx0: %s\n", mpz_get_str(NULL, 16, actual.x->a));
+    printf("\tx1: %s\n", mpz_get_str(NULL, 16, actual.x->b));
+    printf("\ty0: %s\n", mpz_get_str(NULL, 16, actual.y->a));
+    printf("\ty1: %s\n", mpz_get_str(NULL, 16, actual.y->b));
+    printf("Expected:\n");
+    printf("\tx0: %s\n", mpz_get_str(NULL, 16, expect.x->a));
+    printf("\tx1: %s\n", mpz_get_str(NULL, 16, expect.x->b));
+    printf("\ty0: %s\n", mpz_get_str(NULL, 16, expect.y->a));
+    printf("\ty1: %s\n", mpz_get_str(NULL, 16, expect.y->b));
+    G2_elem_free_affine(&expect);
+
+    G2_elem_free_affine(&actual);
+    fp2_elem_free(&u);
+
+    return ret;
+}
+
 bool test_hash_to_G1(int test_num)
 {
     printf("Running %s #%d\n", __func__, test_num);
@@ -368,6 +498,10 @@ int main()
 
     for (int i = 0; i < 5; i++) {
         TEST_RUN(test_map_to_curve_G1(i));
+    }
+
+    for (int i = 0; i < 5; i++) {
+        TEST_RUN(test_map_to_curve_G2(i));
     }
 
     for (int i = 0; i < 5; i++) {

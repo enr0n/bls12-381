@@ -767,6 +767,29 @@ void map_to_curve_G1(G1_elem_affine *P, const mpz_t u)
     mpz_clears(x, xn, xd, y, NULL);
 }
 
+void map_to_curve_G2(G2_elem_affine *P, const fp2_elem *u)
+{
+    fp2_elem x, xn, xd, y;
+
+    fp2_elem_init(&x);
+    fp2_elem_init(&xn);
+    fp2_elem_init(&xd);
+    fp2_elem_init(&y);
+
+    map_to_curve_simple_swu_9mod16(&xn, &xd, &y, u);
+
+    fp2_inv(&x, &xd);
+    fp2_mul(&x, &x, &xn);
+
+    iso_map_G2(P->x, P->y, &x, &y);
+    P->infinity = false;
+
+    fp2_elem_free(&x);
+    fp2_elem_free(&xn);
+    fp2_elem_free(&xd);
+    fp2_elem_free(&y);
+}
+
 void clear_cofactor_G1(G1_elem_affine *P)
 {
     mpz_t h_eff;

@@ -16,5 +16,6 @@ void map_to_curve_simple_swu_3mod4(mpz_t xn, mpz_t xd, mpz_t y, const mpz_t u);
 void map_to_curve_G1(G1_elem_affine *P, const mpz_t u);
 
 void map_to_curve_simple_swu_9mod16(fp2_elem *xn, fp2_elem *xd, fp2_elem *y, const fp2_elem *u);
+void map_to_curve_G2(G2_elem_affine *P, const fp2_elem *u);
 
 #endif /* _HASH_H_ */

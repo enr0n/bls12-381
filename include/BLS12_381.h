@@ -356,16 +356,28 @@ void BLS12_381_pairing(fp12_elem *r, const G2_elem_affine *Q, const G1_elem_affi
  * Hash-to-curve implementations follow the IETF draft:
  *   https://www.ietf.org/archive/id/draft-irtf-cfrg-hash-to-curve-11.txt
  *
- * TODO(nr): Expand on background and parameters used in hash-to-curve.
+ * For BLS12-381, hashing to G_1 and G_2 relies on the simplified SWU map, for
+ * which there are special cases that can be easily applied to these groups.
+ * Particularly, since the standard simplified SWU map requires a curve that
+ * has j-invariant not equal to 0 or 1728 (i.e. A, B non-zero), we must map to
+ * curves isogenous to E and its sextic twist E', which have non-zero
+ * parameters A and B in Weierstrass form.
+ *
+ * Below are the parameters used in these isogenous curves.
+ *
+ * Additionally, below is the parameter which can be used for more efficient
+ * co-factor clearing to G_1. In the case of G_2, there is an even more
+ * efficient method which relies on an endomorphism of G_2. Thus, there is no
+ * BLS12_381_G2_H_EFF parameter.
  */
 #define BLS12_381_ISOGENY_A "0x144698a3b8e9433d693a02c96d4982b0ea985383ee66a8d8e8981aefd881ac98936f8da0e0f97f5cf428082d584c1d"
 #define BLS12_381_ISOGENY_B "0x12e2908d11688030018b12e8753eee3b2016c1f0f24f4070a0b9c14fcef35ef55a23215a316ceaa5d1cc48e98e172be0"
 
-#define BLS12_381_TWIST_ISOGENY_A_X "0"
-#define BLS12_381_TWIST_ISOGENY_A_Y "240"
+#define BLS12_381_TWIST_ISOGENY_A_X "0x0"
+#define BLS12_381_TWIST_ISOGENY_A_Y "0xf0"
 
-#define BLS12_381_TWIST_ISOGENY_B_X "1012"
-#define BLS12_381_TWIST_ISOGENY_B_Y "1012"
+#define BLS12_381_TWIST_ISOGENY_B_X "0x3f4"
+#define BLS12_381_TWIST_ISOGENY_B_Y "0x3f4"
 
 #define BLS12_381_G1_H_EFF "0xd201000000010001"
 

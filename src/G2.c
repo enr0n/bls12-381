@@ -6,6 +6,20 @@
 
 #include "BLS12_381.h"
 
+void G2_elem_set_affine(G2_elem_affine *P, const G2_elem_affine *Q)
+{
+    fp2_elem_set(P->x, Q->x);
+    fp2_elem_set(P->y, Q->y);
+    P->infinity = Q->infinity;
+}
+
+void G2_elem_set_proj(G2_elem_proj *P, const G2_elem_proj *Q)
+{
+    fp2_elem_set(P->x, Q->x);
+    fp2_elem_set(P->y, Q->y);
+    fp2_elem_set(P->z, Q->z);
+}
+
 void G2_affine2proj(G2_elem_proj *proj, const G2_elem_affine *affn)
 {
     if (affn->infinity) {

@@ -5,6 +5,20 @@
 
 #include "BLS12_381.h"
 
+void G1_elem_set_affine(G1_elem_affine *P, const G1_elem_affine *Q)
+{
+    mpz_set(P->x, Q->x);
+    mpz_set(P->y, Q->y);
+    P->infinity = Q->infinity;
+}
+
+void G1_elem_set_proj(G1_elem_proj *P, const G1_elem_proj *Q)
+{
+    mpz_set(P->x, Q->x);
+    mpz_set(P->y, Q->y);
+    mpz_set(P->z, Q->z);
+}
+
 void G1_affine2proj(G1_elem_proj *proj, const G1_elem_affine *affn)
 {
     if (affn->infinity) {

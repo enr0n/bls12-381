@@ -157,6 +157,10 @@ typedef struct {
     mpz_t z;
 } G1_elem_proj;
 
+/* Set one element to another. */
+void G1_elem_set_affine(G1_elem_affine *P, const G1_elem_affine *Q);
+void G1_elem_set_proj(G1_elem_proj *P, const G1_elem_proj *Q);
+
 /* Covert affine to projective, and vice versa. */
 void G1_affine2proj(G1_elem_proj *proj, const G1_elem_affine *affn);
 void G1_proj2affine(G1_elem_affine *affn, const G1_elem_proj *proj);
@@ -258,6 +262,10 @@ typedef struct {
     fp2_elem *y;
     fp2_elem *z;
 } G2_elem_proj;
+
+/* Set one element to another. */
+void G2_elem_set_affine(G2_elem_affine *P, const G2_elem_affine *Q);
+void G2_elem_set_proj(G2_elem_proj *P, const G2_elem_proj *Q);
 
 /* Covert affine to projective, and vice versa. */
 void G2_affine2proj(G2_elem_proj *proj, const G2_elem_affine *affn);

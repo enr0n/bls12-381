@@ -425,28 +425,51 @@ void G1_add_mixed(G1_elem_proj *r, const G1_elem_proj *P, const G1_elem_affine *
 void G1_mul_scalar(G1_elem_affine *r, const G1_elem_affine *P, const mpz_t m)
 {
     G1_elem_proj r_proj, P_proj;
-    mp_bitcnt_t c;
 
     G1_identity_init_proj(&P_proj);
     G1_identity_init_proj(&r_proj);
 
     G1_affine2proj(&P_proj, P);
-    G1_affine2proj(&r_proj, P);
+    G1_mul_scalar_proj(&r_proj, &P_proj, m);
+    G1_proj2affine(r, &r_proj);
 
-    c = (mp_bitcnt_t)mpz_sizeinbase(m, 2) - 2;
+    G1_elem_free_proj(&P_proj);
+    G1_elem_free_proj(&r_proj);
+}
+
+void G1_mul_scalar_proj(G1_elem_proj *r, const G1_elem_proj *P, const mpz_t m)
+{
+    G1_elem_proj tmp;
+    mp_bitcnt_t c;
+    mpz_t m_pos;
+    int sign;
+
+    G1_identity_init_proj(&tmp);
+
+    mpz_init_set(m_pos, m);
+    if ((sign = mpz_sgn(m)) < 0) {
+        mpz_neg(m_pos, m);
+    }
+
+    G1_elem_set_proj(&tmp, P);
+
+    c = (mp_bitcnt_t)mpz_sizeinbase(m_pos, 2) - 2;
     for (;;) {
-        G1_double_proj(&r_proj, &r_proj);
+        G1_double_proj(&tmp, &tmp);
 
-        if (mpz_tstbit(m, c)) {
-            G1_add_proj(&r_proj, &r_proj, &P_proj);
+        if (mpz_tstbit(m_pos, c)) {
+            G1_add_proj(&tmp, &tmp, P);
         }
 
         if (!c) break;
         c--;
     }
 
-    G1_proj2affine(r, &r_proj);
+    G1_elem_set_proj(r, &tmp);
 
-    G1_elem_free_proj(&P_proj);
-    G1_elem_free_proj(&r_proj);
+    if (sign < 0) {
+        G1_negate_proj(r, r);
+    }
+
+    G1_elem_free_proj(&tmp);
 }

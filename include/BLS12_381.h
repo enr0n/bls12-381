@@ -232,6 +232,7 @@ void G1_double_proj(G1_elem_proj *r, const G1_elem_proj *P);
 void G1_add_proj(G1_elem_proj *r, const G1_elem_proj *P, const G1_elem_proj *Q);
 void G1_add_mixed(G1_elem_proj *r, const G1_elem_proj *P, const G1_elem_affine *Q);
 void G1_mul_scalar(G1_elem_affine *r, const G1_elem_affine *P, const mpz_t m);
+void G1_mul_scalar_proj(G1_elem_proj *r, const G1_elem_proj *P, const mpz_t m);
 
 /**
  * G_2 is an order-r group of points on the twist E': y^2 = x^3 + 4(u + 1),
@@ -343,6 +344,7 @@ void G2_double_proj(G2_elem_proj *r, const G2_elem_proj *P);
 void G2_add_proj(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_proj *Q);
 void G2_add_mixed(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_affine *Q);
 void G2_mul_scalar(G2_elem_affine *r, const G2_elem_affine *P, const mpz_t m);
+void G2_mul_scalar_proj(G2_elem_proj *r, const G2_elem_proj *P, const mpz_t m);
 
 /**
  * The pairing computation, given by the twisted ate pairing e: G_2 x G_1 -> G_T. This

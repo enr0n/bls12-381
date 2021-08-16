@@ -304,8 +304,7 @@ void G2_negate_affine(G2_elem_affine *r, const G2_elem_affine *P)
         fp2_elem_set(r->y, P->y);
         r->infinity = true;
     } else {
-        mpz_neg(r->y->a, P->y->a);
-        mpz_neg(r->y->b, P->y->b);
+        fp2_negate(r->y, P->y);
         r->infinity = false;
     }
 }
@@ -313,8 +312,7 @@ void G2_negate_affine(G2_elem_affine *r, const G2_elem_affine *P)
 void G2_negate_proj(G2_elem_proj *r, const G2_elem_proj *P)
 {
     fp2_elem_set(r->x, P->x);
-    mpz_neg(r->y->a, P->y->a);
-    mpz_neg(r->y->b, P->y->b);
+    fp2_negate(r->y, P->y);
     fp2_elem_set(r->z, P->z);
 }
 
@@ -552,28 +550,51 @@ void G2_add_mixed(G2_elem_proj *r, const G2_elem_proj *P, const G2_elem_affine *
 void G2_mul_scalar(G2_elem_affine *r, const G2_elem_affine *P, const mpz_t m)
 {
     G2_elem_proj r_proj, P_proj;
-    mp_bitcnt_t c;
 
     G2_identity_init_proj(&P_proj);
     G2_identity_init_proj(&r_proj);
 
     G2_affine2proj(&P_proj, P);
-    G2_affine2proj(&r_proj, P);
+    G2_mul_scalar_proj(&r_proj, &P_proj, m);
+    G2_proj2affine(r, &r_proj);
 
-    c = (mp_bitcnt_t)mpz_sizeinbase(m, 2) - 2;
+    G2_elem_free_proj(&P_proj);
+    G2_elem_free_proj(&r_proj);
+}
+
+void G2_mul_scalar_proj(G2_elem_proj *r, const G2_elem_proj *P, const mpz_t m)
+{
+    G2_elem_proj tmp;
+    mp_bitcnt_t c;
+    mpz_t m_pos;
+    int sign;
+
+    G2_identity_init_proj(&tmp);
+
+    mpz_init_set(m_pos, m);
+    if ((sign = mpz_sgn(m)) < 0) {
+        mpz_neg(m_pos, m);
+    }
+
+    G2_elem_set_proj(&tmp, P);
+
+    c = (mp_bitcnt_t)mpz_sizeinbase(m_pos, 2) - 2;
     for (;;) {
-        G2_double_proj(&r_proj, &r_proj);
+        G2_double_proj(&tmp, &tmp);
 
-        if (mpz_tstbit(m, c)) {
-            G2_add_proj(&r_proj, &r_proj, &P_proj);
+        if (mpz_tstbit(m_pos, c)) {
+            G2_add_proj(&tmp, &tmp, P);
         }
 
         if (!c) break;
         c--;
     }
 
-    G2_proj2affine(r, &r_proj);
+    G2_elem_set_proj(r, &tmp);
 
-    G2_elem_free_proj(&P_proj);
-    G2_elem_free_proj(&r_proj);
+    if (sign < 0) {
+        G2_negate_proj(r, r);
+    }
+
+    G2_elem_free_proj(&tmp);
 }

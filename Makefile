@@ -5,7 +5,7 @@ ifeq ($(PREFIX),)
 endif
 
 INCLUDE = -Isrc -Iinclude
-CFLAGS = -fPIC -Wall -Wextra -O2 $(INCLUDE) -g
+CFLAGS = -fPIC -Wall -Wextra -Werror -O2 $(INCLUDE) -g
 LDFLAGS = -shared
 
 RM = rm -f

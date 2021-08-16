@@ -14,7 +14,6 @@
  */
 #include <assert.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include <gmp.h>
@@ -124,18 +123,6 @@ void fp2_elem_set_str(fp2_elem *e, const char *a, const char *b)
 void fp2_elem_free(fp2_elem *e)
 {
     mpz_clears(e->a, e->b, NULL);
-}
-
-char *fp2_elem_get_str(const fp2_elem *e)
-{
-    char *str;
-
-    str = calloc(1, sizeof(char));
-    sprintf(str, "%s + %s * u",
-            mpz_get_str(NULL, 16, e->a),
-            mpz_get_str(NULL, 16, e->b));
-
-    return str;
 }
 
 void fp2_add(fp2_elem *x, const fp2_elem *y, const fp2_elem *z)
@@ -373,19 +360,6 @@ void fp6_elem_free(fp6_elem *e)
     fp2_elem_free(e->a);
     fp2_elem_free(e->b);
     fp2_elem_free(e->c);
-}
-
-char *fp6_elem_get_str(const fp6_elem *e)
-{
-    char *str;
-
-    str = calloc(1, sizeof(char));
-    sprintf(str, "(%s) + (%s) * v + (%s) * v^2",
-            fp2_elem_get_str(e->a),
-            fp2_elem_get_str(e->b),
-            fp2_elem_get_str(e->c));
-
-    return str;
 }
 
 void fp6_add(fp6_elem *x, const fp6_elem *y, const fp6_elem *z)

@@ -31,8 +31,6 @@ void fp2_elem_from_str(fp2_elem *e, const char *a, const char *b);
 void fp2_elem_set_str(fp2_elem *e, const char *a, const char *b);
 void fp2_elem_free(fp2_elem *e);
 
-char *fp2_elem_get_str(const fp2_elem *e);
-
 /* Arithmetic operations in the field extension F_p^2. */
 void fp2_add(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
 void fp2_sub(fp2_elem *x, const fp2_elem *y, const fp2_elem *z);
@@ -53,8 +51,6 @@ void fp6_elem_from_str(fp6_elem *e,
                        const char *b1, const char *b2,
                        const char *c1, const char *c2);
 void fp6_elem_free(fp6_elem *e);
-
-char *fp6_elem_get_str(const fp6_elem *e);
 
 /**
  * Arithmetic operations in the field extension F_p^6. This field is implemented

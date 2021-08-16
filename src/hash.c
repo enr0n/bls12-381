@@ -59,9 +59,9 @@ void OS2IP(mpz_t x, const octet_string *o)
     free(str);
 }
 
-int expand_message_xmd(octet_string *bytes, const char *msg, const char *DST, uint32_t len_in_bytes)
+int expand_message_xmd(octet_string *bytes, const uint8_t *msg, const uint8_t *DST, uint32_t len_in_bytes)
 {
-    uint32_t ell, DST_len;
+    uint32_t ell, DST_len, msg_len;
     octet_string *DST_prime, *msg_prime, *uniform_bytes,
                  *tmp, *arg;
 
@@ -73,19 +73,20 @@ int expand_message_xmd(octet_string *bytes, const char *msg, const char *DST, ui
         return 1;
     }
 
-    DST_len = strnlen(DST, DST_MAX_LEN);
+    DST_len = strnlen((char*)DST, DST_MAX_LEN);
+    msg_len = strlen((char*)msg);
 
     octet_string_alloc(&uniform_bytes, SHA256_DIGEST_LENGTH * ell);
     octet_string_alloc(&DST_prime, DST_len + 2);
-    octet_string_alloc(&msg_prime, R_IN_BYTES + DST_prime->len + strlen(msg) + 2);
+    octet_string_alloc(&msg_prime, R_IN_BYTES + DST_prime->len + msg_len + 2);
     octet_string_alloc(&tmp, SHA256_DIGEST_LENGTH + DST_len + 1);
     octet_string_alloc(&arg, 0);
 
-    octet_string_appendn(DST_prime, (uint8_t*)DST, DST_len);
+    octet_string_appendn(DST_prime, DST, DST_len);
     octet_strcat(DST_prime, I2OSP(arg, DST_len, 1));
 
     octet_strcat(msg_prime, I2OSP(arg, 0, R_IN_BYTES));
-    octet_string_appendn(msg_prime, (uint8_t*)msg, strlen(msg));
+    octet_string_appendn(msg_prime, msg, msg_len);
     octet_strcat(msg_prime, I2OSP(arg, len_in_bytes, 2));
     octet_string_append(msg_prime, 0x0);
     octet_strcat(msg_prime, DST_prime);
@@ -102,7 +103,7 @@ int expand_message_xmd(octet_string *bytes, const char *msg, const char *DST, ui
 
     if (ell < 2) goto out;
 
-    for (int i = 2; i <= ell; i++) {
+    for (int i = 2; i <= (int)ell; i++) {
         octet_string_reset(tmp);
 
         for (int j = 0; j < SHA256_DIGEST_LENGTH; j++) {
@@ -129,7 +130,7 @@ out:
     return 0;
 }
 
-mpz_t *hash_to_field_fp(const char *msg, const char *DST, uint32_t count)
+mpz_t *hash_to_field_fp(const uint8_t *msg, const uint8_t *DST, uint32_t count)
 {
     mpz_t *elems;
     mpz_t p;
@@ -146,7 +147,7 @@ mpz_t *hash_to_field_fp(const char *msg, const char *DST, uint32_t count)
 
     assert(expand_message_xmd(uniform_bytes, msg, DST, len_in_bytes) == 0);
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < (int)count; i++) {
         octet_substr(tv, uniform_bytes, HTF_PARAM_L * i, HTF_PARAM_L);
 
         mpz_init(elems[i]);
@@ -161,7 +162,7 @@ mpz_t *hash_to_field_fp(const char *msg, const char *DST, uint32_t count)
     return elems;
 }
 
-fp2_elem **hash_to_field_fp2(const char *msg, const char *DST, uint32_t count)
+fp2_elem **hash_to_field_fp2(const uint8_t *msg, const uint8_t *DST, uint32_t count)
 {
     fp2_elem **elems;
     mpz_t p;
@@ -178,7 +179,7 @@ fp2_elem **hash_to_field_fp2(const char *msg, const char *DST, uint32_t count)
 
     assert(expand_message_xmd(uniform_bytes, msg, DST, len_in_bytes) == 0);
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < (int)count; i++) {
         elems[i] = calloc(1, sizeof(fp2_elem));
         fp2_elem_init(elems[i]);
 

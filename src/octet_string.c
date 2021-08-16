@@ -77,7 +77,7 @@ octet_string *octet_string_append(octet_string *dest, uint8_t byte)
     return dest;
 }
 
-octet_string *octet_string_appendn(octet_string *dest, uint8_t *bytes, uint32_t n)
+octet_string *octet_string_appendn(octet_string *dest, const uint8_t *bytes, uint32_t n)
 {
     if (dest->cap < dest->len + n) {
         octet_string_realloc(dest, dest->len + n);

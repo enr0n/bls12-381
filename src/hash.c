@@ -799,6 +799,113 @@ void clear_cofactor_G1(G1_elem_affine *P)
     mpz_clear(h_eff);
 }
 
+/**
+ * The endomorphism psi used in cofactor clearing for G2.
+ */
+#define PSI_C1_X "0x0"
+#define PSI_C1_Y "0x1a0111ea397fe699ec02408663d4de85aa0d857d89759ad4897d29650fb8"\
+                 "5f9b409427eb4f49fffd8bfd00000000aaad"
+#define PSI_C2_X "0x135203e60180a68ee2e9c448d77a2cd91c3dedd930b1cf60ef396489f61eb4"\
+                 "5e304466cf3e67fa0af1ee7b04121bdea2"
+#define PSI_C2_Y "0x6af0e0437ff400b6831e36d6bd17ffe48395dabc2d3435e77f76e17009241c"\
+                 "5ee67992f72ec05f4c81084fbede3cc09"
+void psi(G2_elem_proj *Q, const G2_elem_proj *P)
+{
+
+    G2_elem_affine P_affn;
+    fp2_elem c1, c2;
+
+    fp2_elem_from_str(&c1, PSI_C1_X, PSI_C1_Y);
+    fp2_elem_from_str(&c2, PSI_C2_X, PSI_C2_Y);
+
+    G2_identity_init_affine(&P_affn);
+    G2_proj2affine(&P_affn, P);
+
+    // Frobenius endomorphism in F_p^2 is just a conjugation.
+    fp2_conjugate(P_affn.x, P_affn.x);
+    fp2_mul(P_affn.x, P_affn.x, &c1);
+
+    fp2_conjugate(P_affn.y, P_affn.y);
+    fp2_mul(P_affn.y, P_affn.y, &c2);
+
+    G2_affine2proj(Q, &P_affn);
+
+    fp2_elem_free(&c1);
+    fp2_elem_free(&c2);
+    G2_elem_free_affine(&P_affn);
+}
+
+/**
+ * psi2 is the application of psi(psi(x)).
+ */
+#define PSI2_C1_X "0x1a0111ea397fe699ec02408663d4de85aa0d857d89759ad4897d29650fb"\
+                  "85f9b409427eb4f49fffd8bfd00000000aaac"
+#define PSI2_C1_Y "0x0"
+void psi2(G2_elem_proj *Q, const G2_elem_proj *P)
+{
+    G2_elem_affine P_affn;
+    fp2_elem c1;
+
+    fp2_elem_from_str(&c1, PSI2_C1_X, PSI2_C1_Y);
+
+    G2_identity_init_affine(&P_affn);
+    G2_proj2affine(&P_affn, P);
+
+    fp2_mul(P_affn.x, &c1, P_affn.x);
+    fp2_negate(P_affn.y, P_affn.y);
+
+    G2_affine2proj(Q, &P_affn);
+
+    fp2_elem_free(&c1);
+    G2_elem_free_affine(&P_affn);
+}
+
+/**
+ * As noted here...
+ *
+ *   https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-11#appendix-G.4
+ *
+ * ...G2 admits an endomorphism psi that can speed up cofactor clearing, which is why this
+ * method looks so different than clear_cofactor_G1.
+ */
+void clear_cofactor_G2(G2_elem_affine *P)
+{
+    mpz_t c1;
+    G2_elem_proj t1, t2, t3, P_proj, tmp;
+
+    mpz_init_set_str(c1, BLS12_381_t, 0);
+    G2_identity_init_proj(&t1);
+    G2_identity_init_proj(&t2);
+    G2_identity_init_proj(&t3);
+    G2_identity_init_proj(&tmp);
+    G2_identity_init_proj(&P_proj);
+
+    G2_affine2proj(&P_proj, P);
+
+    G2_mul_scalar_proj(&t1, &P_proj, c1); // 1.  t1 = c1 * P
+    psi(&t2, &P_proj);                    // 2.  t2 = psi(P)
+    G2_double_proj(&t3, &P_proj);         // 3.  t3 = 2 * P
+    psi2(&t3, &t3);                       // 4.  t3 = psi2(t3)
+    G2_negate_proj(&tmp, &t2);            // 5.  t3 = t3 - t2
+    G2_add_proj(&t3, &t3, &tmp);
+    G2_add_proj(&t2, &t1, &t2);           // 6.  t2 = t1 + t2
+    G2_mul_scalar_proj(&t2, &t2, c1);     // 7.  t2 = c1 * t2
+    G2_add_proj(&t3, &t3, &t2);           // 8.  t3 = t3 + t2
+    G2_negate_proj(&tmp, &t1);            // 9.  t3 = t3 - t1
+    G2_add_proj(&t3, &t3, &tmp);
+    G2_negate_proj(&tmp, &P_proj);        // 10.  Q = t3 - P
+    G2_add_proj(&tmp, &t3, &tmp);
+
+    G2_proj2affine(P, &tmp);              // 11. return Q
+
+    mpz_clear(c1);
+    G2_elem_free_proj(&t1);
+    G2_elem_free_proj(&t2);
+    G2_elem_free_proj(&t3);
+    G2_elem_free_proj(&tmp);
+    G2_elem_free_proj(&P_proj);
+}
+
 void BLS12_381_hash_to_G1(G1_elem_affine *P, const uint8_t *bytes, const uint8_t *DST)
 {
     mpz_t *u;
@@ -829,4 +936,36 @@ void BLS12_381_hash_to_G1(G1_elem_affine *P, const uint8_t *bytes, const uint8_t
     G1_elem_free_proj(&R);
     G1_elem_free_proj(&Q0_proj);
     G1_elem_free_proj(&Q1_proj);
+}
+
+void BLS12_381_hash_to_G2(G2_elem_affine *P, const uint8_t *bytes, const uint8_t *DST)
+{
+    fp2_elem **u;
+    G2_elem_affine Q0, Q1;
+    G2_elem_proj R, Q0_proj, Q1_proj;
+
+    G2_identity_init_affine(&Q0);
+    G2_identity_init_affine(&Q1);
+    G2_identity_init_proj(&R);
+    G2_identity_init_proj(&Q0_proj);
+    G2_identity_init_proj(&Q1_proj);
+
+    u = hash_to_field_fp2(bytes, DST, 2);
+
+    map_to_curve_G2(&Q0, u[0]);
+    map_to_curve_G2(&Q1, u[1]);
+
+    G2_affine2proj(&Q0_proj, &Q0);
+    G2_affine2proj(&Q1_proj, &Q1);
+
+    G2_add_proj(&R, &Q0_proj, &Q1_proj);
+
+    G2_proj2affine(P, &R);
+    clear_cofactor_G2(P);
+
+    G2_elem_free_affine(&Q0);
+    G2_elem_free_affine(&Q1);
+    G2_elem_free_proj(&R);
+    G2_elem_free_proj(&Q0_proj);
+    G2_elem_free_proj(&Q1_proj);
 }

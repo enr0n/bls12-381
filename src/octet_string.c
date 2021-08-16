@@ -33,7 +33,7 @@ void octet_string_free(octet_string *o)
 
 void octet_string_reset(octet_string *o)
 {
-    for (int i = 0; i < o->cap; i++) {
+    for (int i = 0; i < (int)o->cap; i++) {
         o->data[i] = 0x0;
     }
     o->len = 0;
@@ -44,7 +44,7 @@ char *octet_string_to_str(const octet_string *o)
     char *str;
 
     str = calloc(2 * o->len + 1, sizeof(char));
-    for (int i = 0; i < o->len; i++) {
+    for (int i = 0; i < (int)o->len; i++) {
         sprintf(&str[2*i], "%02x", o->data[i]);
     }
     str[2 * o->len] = '\0';
@@ -83,7 +83,7 @@ octet_string *octet_string_appendn(octet_string *dest, uint8_t *bytes, uint32_t 
         octet_string_realloc(dest, dest->len + n);
     }
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < (int)n; i++) {
         dest->data[dest->len + i] = bytes[i];
     }
     dest->len += n;
@@ -98,7 +98,7 @@ octet_string *octet_substr(octet_string *dest, const octet_string *src,
         octet_string_realloc(dest, len);
     }
 
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i < (int)len; i++) {
         dest->data[i] = src->data[start + i];
     }
     dest->len = len;
@@ -126,7 +126,7 @@ octet_string *octet_strcat(octet_string *dest, const octet_string *src)
         octet_string_realloc(dest, src->len + dest->len);
     }
 
-    for (int i = 0; i < src->len; i++) {
+    for (int i = 0; i < (int)src->len; i++) {
         dest->data[dest->len + i] = src->data[i];
     }
     dest->len += src->len;

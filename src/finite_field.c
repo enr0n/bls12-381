@@ -115,6 +115,12 @@ void fp2_elem_from_str(fp2_elem *e, const char *a, const char *b)
     mpz_init_set_str(e->b, b, 0);
 }
 
+void fp2_elem_set_str(fp2_elem *e, const char *a, const char *b)
+{
+    mpz_set_str(e->a, a, 0);
+    mpz_set_str(e->b, b, 0);
+}
+
 void fp2_elem_free(fp2_elem *e)
 {
     mpz_clears(e->a, e->b, NULL);

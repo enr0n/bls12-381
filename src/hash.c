@@ -607,6 +607,145 @@ void iso_map_G1(mpz_t x, mpz_t y, const mpz_t x_prime, const mpz_t y_prime)
 }
 
 /**
+ * Constants for computing the 3-isogeny from E'/F_p^2 to E/F_p^2.
+ */
+const char *iso_G2_k1_x[4] = {
+    "0x5c759507e8e333ebb5b7a9a47d7ed8532c52d39fd3a042a88b58423c50ae15d5c2638e343d9c71c6238aaaaaaaa97d6",
+    "0x0",
+    "0x11560bf17baa99bc32126fced787c88f984f87adf7ae0c7f9a208c6b4f20a4181472aaa9cb8d555526a9ffffffffc71e",
+    "0x171d6541fa38ccfaed6dea691f5fb614cb14b4e7f4e810aa22d6108f142b85757098e38d0f671c7188e2aaaaaaaa5ed1"
+};
+
+const char *iso_G2_k1_y[4] = {
+    "0x5c759507e8e333ebb5b7a9a47d7ed8532c52d39fd3a042a88b58423c50ae15d5c2638e343d9c71c6238aaaaaaaa97d6",
+    "0x11560bf17baa99bc32126fced787c88f984f87adf7ae0c7f9a208c6b4f20a4181472aaa9cb8d555526a9ffffffffc71a",
+    "0x8ab05f8bdd54cde190937e76bc3e447cc27c3d6fbd7063fcd104635a790520c0a395554e5c6aaaa9354ffffffffe38d",
+    "0x0"
+};
+
+const char *iso_G2_k2_x[2] = {
+    "0x0",
+    "0xc"
+};
+
+const char *iso_G2_k2_y[2] = {
+    "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaa63",
+    "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaa9f"
+};
+
+const char *iso_G2_k3_x[4] = {
+   "0x1530477c7ab4113b59a4c18b076d11930f7da5d4a07f649bf54439d87d27e500fc8c25ebf8c92f6812cfc71c71c6d706",
+   "0x0",
+   "0x11560bf17baa99bc32126fced787c88f984f87adf7ae0c7f9a208c6b4f20a4181472aaa9cb8d555526a9ffffffffc71c",
+   "0x124c9ad43b6cf79bfbf7043de3811ad0761b0f37a1e26286b0e977c69aa274524e79097a56dc4bd9e1b371c71c718b10"
+};
+
+const char *iso_G2_k3_y[4] = {
+    "0x1530477c7ab4113b59a4c18b076d11930f7da5d4a07f649bf54439d87d27e500fc8c25ebf8c92f6812cfc71c71c6d706",
+    "0x5c759507e8e333ebb5b7a9a47d7ed8532c52d39fd3a042a88b58423c50ae15d5c2638e343d9c71c6238aaaaaaaa97be",
+    "0x8ab05f8bdd54cde190937e76bc3e447cc27c3d6fbd7063fcd104635a790520c0a395554e5c6aaaa9354ffffffffe38f",
+    "0x0"
+};
+
+const char *iso_G2_k4_x[3] = {
+    "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffa8fb",
+    "0x0",
+    "0x12"
+};
+
+const char *iso_G2_k4_y[3] = {
+    "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffa8fb",
+    "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffa9d3",
+    "0x1a0111ea397fe69a4b1ba7b6434bacd764774b84f38512bf6730d2a0f6b0f6241eabfffeb153ffffb9feffffffffaa99"
+};
+
+void iso_map_G2(fp2_elem *x, fp2_elem *y, const fp2_elem *x_prime, const fp2_elem *y_prime)
+{
+    fp2_elem xn, xd, yn, yd, tmp, k,
+             xp_squared, xp_cubed;
+
+    fp2_elem_init(&xn);
+    fp2_elem_init(&xd);
+    fp2_elem_init(&yn);
+    fp2_elem_init(&yd);
+    fp2_elem_init(&tmp);
+    fp2_elem_init(&k);
+    fp2_elem_init(&xp_squared);
+    fp2_elem_init(&xp_cubed);
+
+    fp2_square(&xp_squared, x_prime);
+    fp2_mul(&xp_cubed, &xp_squared, x_prime);
+
+    // x_num
+    fp2_elem_set_str(&xn, iso_G2_k1_x[0], iso_G2_k1_y[0]);
+
+    fp2_elem_set_str(&k, iso_G2_k1_x[1], iso_G2_k1_y[1]);
+    fp2_mul(&tmp, x_prime, &k);
+    fp2_add(&xn, &xn, &tmp);
+
+    fp2_elem_set_str(&k, iso_G2_k1_x[2], iso_G2_k1_y[2]);
+    fp2_mul(&tmp, &xp_squared, &k);
+    fp2_add(&xn, &xn, &tmp);
+
+    fp2_elem_set_str(&k, iso_G2_k1_x[3], iso_G2_k1_y[3]);
+    fp2_mul(&tmp, &xp_cubed, &k);
+    fp2_add(&xn, &xn, &tmp);
+
+    // x_den
+    fp2_elem_set_str(&xd, iso_G2_k2_x[0], iso_G2_k2_y[0]);
+
+    fp2_elem_set_str(&k, iso_G2_k2_x[1], iso_G2_k2_y[1]);
+    fp2_mul(&tmp, x_prime, &k);
+    fp2_add(&xd, &xd, &tmp);
+
+    fp2_add(&xd, &xd, &xp_squared);
+
+    // y_num
+    fp2_elem_set_str(&yn, iso_G2_k3_x[0], iso_G2_k3_y[0]);
+
+    fp2_elem_set_str(&k, iso_G2_k3_x[1], iso_G2_k3_y[1]);
+    fp2_mul(&tmp, x_prime, &k);
+    fp2_add(&yn, &yn, &tmp);
+
+    fp2_elem_set_str(&k, iso_G2_k3_x[2], iso_G2_k3_y[2]);
+    fp2_mul(&tmp, &xp_squared, &k);
+    fp2_add(&yn, &yn, &tmp);
+
+    fp2_elem_set_str(&k, iso_G2_k3_x[3], iso_G2_k3_y[3]);
+    fp2_mul(&tmp, &xp_cubed, &k);
+    fp2_add(&yn, &yn, &tmp);
+
+    // y_den
+    fp2_elem_set_str(&yd, iso_G2_k4_x[0], iso_G2_k4_y[0]);
+
+    fp2_elem_set_str(&k, iso_G2_k4_x[1], iso_G2_k4_y[1]);
+    fp2_mul(&tmp, x_prime, &k);
+    fp2_add(&yd, &yd, &tmp);
+
+    fp2_elem_set_str(&k, iso_G2_k4_x[2], iso_G2_k4_y[2]);
+    fp2_mul(&tmp, &xp_squared, &k);
+    fp2_add(&yd, &yd, &tmp);
+
+    fp2_add(&yd, &yd, &xp_cubed);
+
+    fp2_inv(x, &xd);
+    fp2_mul(x, x, &xn);
+
+    fp2_inv(y, &yd);
+    fp2_mul(&yn, y_prime, &yn);
+    fp2_mul(y, &yn, y);
+
+    fp2_elem_free(&xn);
+    fp2_elem_free(&xd);
+    fp2_elem_free(&yn);
+    fp2_elem_free(&yd);
+    fp2_elem_free(&tmp);
+    fp2_elem_free(&k);
+    fp2_elem_free(&xp_squared);
+    fp2_elem_free(&xp_cubed);
+}
+
+/**
  * TODO(nr): It may be more convenient to leave things in
  *           projective coordinates, but let's get things
  *           working for now.

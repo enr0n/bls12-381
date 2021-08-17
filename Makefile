@@ -4,9 +4,12 @@ ifeq ($(PREFIX),)
     PREFIX := /usr/local
 endif
 
+libdir ?= $(PREFIX)/lib
+includedir ?= $(PREFIX)/include
+
 INCLUDE = -Isrc -Iinclude
 CFLAGS = -fPIC -Wall -Wextra -Werror -O2 $(INCLUDE) -g
-LDFLAGS = -shared
+LDFLAGS = -shared -lgmp -lcrypto
 
 RM = rm -f
 
@@ -19,7 +22,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(TARGET_LIB)
 
 $(TARGET_LIB): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) $^ $(LDFLAGS) -o $@
 
 .PHONY: clean
 clean:
@@ -28,6 +31,6 @@ clean:
 .PHONY: install
 install: $(TARGET_LIB)
 	install -d $(PREFIX)/lib/
-	install -m 644 $(TARGET_LIB) $(PREFIX)/lib/
+	install -m 755 $(TARGET_LIB) $(libdir)
 	install -d $(PREFIX)/include/
-	install -m 644 include/BLS12_381.h $(PREFIX)/include/
+	install -m 644 include/BLS12_381.h $(includedir)

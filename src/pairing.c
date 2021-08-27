@@ -305,3 +305,8 @@ void ate(fp12_elem *r, const G2_elem_affine *Q, const G1_elem_affine *P)
 
     G2_elem_free_affine(&R);
 }
+
+void BLS12_381_pairing(fp12_elem *r, const G2_elem_affine *Q, const G1_elem_affine *P)
+{
+    ate(r, Q, P);
+}

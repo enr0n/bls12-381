@@ -156,7 +156,7 @@ int test_ate()
     G1_generator_init_affine(&P);
     G2_generator_init_affine(&Q);
 
-    ate(&actual, &Q, &P);
+    BLS12_381_pairing(&actual, &Q, &P);
 
     res = fp12_equal(&actual, &expect);
     printf("Actual:    \n");
@@ -217,7 +217,7 @@ int test_bilinearity()
     mpz_init(c);
     mpz_mul(c, a, b);
 
-    ate(&e, &Q, &P);
+    BLS12_381_pairing(&e, &Q, &P);
 
     // Check that ate(aP, Q) = e^a
     G1_mul_scalar(&aP, &P, a);

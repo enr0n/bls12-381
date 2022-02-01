@@ -9,7 +9,7 @@
 void octet_string_alloc(octet_string **po, uint32_t cap)
 {
     octet_string *o;
-    o = calloc(1, sizeof(octet_string*));
+    o = calloc(1, sizeof(octet_string));
 
     o->data = calloc(cap, sizeof(uint8_t));
     o->cap = cap;
